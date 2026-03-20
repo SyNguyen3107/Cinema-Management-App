@@ -1,0 +1,15 @@
+.env
+*.user
+secrets.json
+appsettings.json
+App.config
+bin/
+obj/
+x64/
+x86/
+.vs/
+*.suo
+*.userosscache
+*.sln.docstates
+*.pdb
+*.log
