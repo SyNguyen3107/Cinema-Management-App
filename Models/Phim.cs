@@ -16,7 +16,7 @@ namespace Cinema_Management_App.Models
         public string TenDienVienChinh { get; set; }
         public DateTime NgayKhoiChieu { get; set; }
 
-        public int[] MaTheLoai { get; set; } = Array.Empty<int>();
+        public int[] DanhSachMaTheLoai { get; set; } = Array.Empty<int>();
 
     }
 }
