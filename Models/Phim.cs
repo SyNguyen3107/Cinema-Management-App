@@ -15,7 +15,10 @@ namespace Cinema_Management_App.Models
         public string TenDaoDien { get; set; }
         public string TenDienVienChinh { get; set; }
         public DateTime NgayKhoiChieu { get; set; }
+<<<<<<< HEAD
 
         public int[] MaTheLoai { get; set; } = Array.Empty<int>();
+=======
+>>>>>>> 523c6e7 (feat: add database models for cinema management)
     }
 }
