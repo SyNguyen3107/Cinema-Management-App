@@ -1,12 +1,15 @@
-﻿using Cinema_Management_App.Services;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System.Configuration;
+using System.Data;
 using System.Windows;
 using Cinema_Management_App.Models;
-using Cinema_Management_App.Repositories;
+using Cinema_Management_App.Services;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace RapPhimManagement
+namespace Cinema_Management_App
 {
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
     public partial class App : Application
     {
         // Tạo một bộ cung cấp dịch vụ (Service Provider) toàn cục
@@ -17,7 +20,7 @@ namespace RapPhimManagement
         public App()
         {
             Services = ConfigureServices();
-        }
+    }
 
         private static IServiceProvider ConfigureServices()
         {
