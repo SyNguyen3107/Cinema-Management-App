@@ -110,7 +110,7 @@
                 <RowDefinition Height="324*"/>
             </Grid.RowDefinitions>
             <Label Content="Tên phim" HorizontalAlignment="Left" Margin="34,0,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
-            <TextBox x:Name="TextBoxTenPhim" HorizontalAlignment="Left" Margin="34,34,0,0" VerticalAlignment="Top" Width="316" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15"/>
+            <TextBox x:Name="TextBoxTenPhim" HorizontalAlignment="Left" Margin="34,34,0,0" VerticalAlignment="Top" Width="316" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15" Text="{Binding TenPhim}"/>
             <Label Content="Tên thể loại" HorizontalAlignment="Left" Margin="34,70,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
             <dxe:ComboBoxEdit x:Name="ComboBoxTenTheLoai"
                   CornerRadius="8"
@@ -136,22 +136,22 @@
             </dxe:ComboBoxEdit>
 
             <Label Content="Tên đạo diễn" HorizontalAlignment="Left" Margin="34,135,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
-            <TextBox x:Name="TextBoxTenDaoDien" HorizontalAlignment="Left" Margin="34,164,0,0" VerticalAlignment="Top" Width="316" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15"/>
+            <TextBox x:Name="TextBoxTenDaoDien" HorizontalAlignment="Left" Margin="34,164,0,0" VerticalAlignment="Top" Width="316" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15" Text="{Binding TenDaoDien}"/>
 
             <Label Content="Tên nhãn phim" HorizontalAlignment="Left" Margin="34,200,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
-            <ComboBox x:Name="ComboBoxTenNhanPhim" HorizontalAlignment="Left" Margin="34,228,0,0" VerticalAlignment="Top" Width="158" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15" Foreground="#FFAC8686" Background="#FFBBBBBB"/>
+            <ComboBox x:Name="ComboBoxTenNhanPhim" HorizontalAlignment="Left" Margin="34,228,0,0" VerticalAlignment="Top" Width="158" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15" Foreground="#FFAC8686" Background="#FFBBBBBB" ItemsSource="{Binding TenNhanPhim}"/>
 
             <Label Content="Mã phim" HorizontalAlignment="Left" Margin="401,0,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
-            <TextBox x:Name="TextBoxMaPhim" HorizontalAlignment="Left" Margin="401,34,0,0" VerticalAlignment="Top" Width="316" Height="31" Background="#FFC6C6C6" FontSize="15" IsReadOnly="True" BorderBrush="#FF6EA3ED" Grid.Row="1"/>
+            <TextBox x:Name="TextBoxMaPhim" HorizontalAlignment="Left" Margin="401,34,0,0" VerticalAlignment="Top" Width="316" Height="31" Background="#FFC6C6C6" FontSize="15" IsReadOnly="True" BorderBrush="#FF6EA3ED" Grid.Row="1" Text="{Binding MaPhim}"/>
 
             <Label Content="Thời lượng" HorizontalAlignment="Left" Margin="401,70,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
-            <TextBox x:Name="TextBoxThoiLuong" HorizontalAlignment="Left" Margin="401,98,0,0" VerticalAlignment="Top" Width="124" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15"/>
+            <TextBox x:Name="TextBoxThoiLuong" HorizontalAlignment="Left" Margin="401,98,0,0" VerticalAlignment="Top" Width="124" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15" Text="{Binding ThoiLuong}"/>
 
             <Label Content="Tên diễn viên chính" HorizontalAlignment="Left" Margin="401,135,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
-            <TextBox x:Name="TextBoxTenDienVienChinh" HorizontalAlignment="Left" Margin="401,164,0,0" VerticalAlignment="Top" Width="316" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15"/>
-
+            <TextBox x:Name="TextBoxTenDienVienChinh" HorizontalAlignment="Left" Margin="401,164,0,0" VerticalAlignment="Top" Width="316" Height="31" BorderBrush="#FF6EA3ED" Grid.Row="1" FontSize="15" Text="{Binding TenDienVienChinh}"/>
+            
             <Label Content="Ngày khởi chiếu" HorizontalAlignment="Left" Margin="401,200,0,0" VerticalAlignment="Top" FontSize="14" Grid.Row="1"/>
-            <DatePicker x:Name="DatePickerNgayKhoiChieu" HorizontalAlignment="Left" Margin="401,228,0,0" VerticalAlignment="Top" Width="316" Height="31" FontSize="15" SelectedDateFormat="Short" Grid.Row="1">
+            <DatePicker x:Name="DatePickerNgayKhoiChieu" HorizontalAlignment="Left" Margin="401,228,0,0" VerticalAlignment="Top" Width="316" Height="31" FontSize="15" SelectedDateFormat="Short" Grid.Row="1" SelectedDate="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}">
                 <DatePicker.BorderBrush>
                     <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1">
                         <GradientStop Color="#FFA3AEB9"/>
@@ -171,7 +171,8 @@
         Margin="635,301,0,10"
         Height="31"
         Width="95"
-        FontSize="16" BorderBrush="#FF6EA3ED" Grid.Row="1"/>
+        FontSize="16" BorderBrush="#FF6EA3ED" Grid.Row="1"
+        Command="{Binding TiepNhanCommand}"/>
             <Button x:Name="ButtonThoat" Content="Thoát"
         Style="{StaticResource RoundedButtonStyle}"
         Background="#FFFF9393"
@@ -179,7 +180,8 @@
         Margin="31,301,0,10"
         Height="31"
         Width="95"
-        FontSize="16" BorderBrush="#FF6EA3ED" Grid.Row="1"/>
+        FontSize="16" BorderBrush="#FF6EA3ED" Grid.Row="1"
+        Command="{Binding ThoatCommand}"/>
             <Button x:Name="ButtonDatLai" Content="Đặt lại"
                 Style="{StaticResource RoundedButtonStyle}"
                 Background="White"
@@ -187,7 +189,8 @@
                 Margin="145,301,0,10"
                 Height="31"
                 Width="94"
-                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"/>
+                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"
+                Command="{Binding DatLaiCommand}"/>
             <Button x:Name="ButtonXoaPhim" Content="Xóa phim"
                 Style="{StaticResource RoundedButtonStyle}"
                 Background="White"
@@ -195,7 +198,8 @@
                 Margin="255,301,0,10"
                 Height="31"
                 Width="95"
-                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"/>
+                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"
+                Command="{Binding XoaPhimCommand}"/>
             <Button x:Name="ButtonCapNhatPhim" Content="Cập nhật phim"
                 Style="{StaticResource RoundedButtonStyle}"
                 Background="White"
@@ -203,7 +207,8 @@
                 Margin="366,301,0,10"
                 Height="31"
                 Width="135"
-                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"/>
+                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"
+                Command="{Binding CapnhatPhimCommand}"/>
             <Button x:Name="ButtonTimPhim" Content="Tìm phim"
                 Style="{StaticResource RoundedButtonStyle}"
                 Background="White"
@@ -211,7 +216,8 @@
                 Margin="520,301,0,10"
                 Height="31"
                 Width="96"
-                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"/>
+                FontSize="16" BorderBrush="#FF6D6DF9" Grid.Row="1"
+                Command="{Binding TimPhimCommand}"/>
         </Grid>
     </Border>
 </Window>
