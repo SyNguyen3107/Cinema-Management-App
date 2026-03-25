@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -40,6 +40,28 @@ namespace Cinema_Management_App.Services
             }
         }
 
+        public async Task<DataTable> ExecuteQueryAsync(string query, MySqlParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+
+                    await conn.OpenAsync();
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
+                }
+            }
+        }
+
         // Dùng cho INSERT, UPDATE, DELETE (Trả về số dòng bị ảnh hưởng)
         public int ExecuteNonQuery(string query, MySqlParameter[] parameters = null)
         {
@@ -55,6 +77,55 @@ namespace Cinema_Management_App.Services
                     conn.Open();
                     return cmd.ExecuteNonQuery();
                 }
+            }
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(string query, MySqlParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+
+                    await conn.OpenAsync();
+                    return await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<bool> TestConnectionAsync()
+        {
+            try
+            {
+                using (var conn = new MySqlConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    return conn.State == ConnectionState.Open;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool TestConnection()
+        {
+            try
+            {
+                using (var conn = new MySqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    return conn.State == ConnectionState.Open;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
     }

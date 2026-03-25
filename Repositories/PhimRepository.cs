@@ -1,4 +1,4 @@
-﻿using Cinema_Management_App.Models;
+using Cinema_Management_App.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace Cinema_Management_App.Services
             string query = @"
                 SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.MaNhanPhim,
                        p.TenDaoDien, p.TenDienVienChinh, p.NgayKhoiChieu
-                FROM Phim p";
+                FROM PHIM p";
 
             DataTable dt = _db.ExecuteQuery(query);
             var list = new List<Phim>();
@@ -42,7 +42,7 @@ namespace Cinema_Management_App.Services
             string query = @"
                 SELECT MaPhim, TenPhim, ThoiLuong, MaNhanPhim,
                        TenDaoDien, TenDienVienChinh, NgayKhoiChieu
-                FROM Phim
+                FROM PHIM
                 WHERE MaPhim = @MaPhim";
 
             var parameters = new[]
@@ -60,7 +60,7 @@ namespace Cinema_Management_App.Services
 
         private List<int> GetDanhSachMaTheLoai(int maPhim)
         {
-            string query = "SELECT MaTheLoai FROM PhimTheLoai WHERE MaPhim = @MaPhim";
+            string query = "SELECT MaTheLoai FROM CHITIETTHELOAI WHERE MaPhim = @MaPhim";
             var parameters = new[] { new MySqlParameter("@MaPhim", maPhim) };
             DataTable dt = _db.ExecuteQuery(query, parameters);
 
@@ -76,7 +76,7 @@ namespace Cinema_Management_App.Services
         public bool AddPhim(Phim phim)
         {
             string query = @"
-                INSERT INTO Phim (TenPhim, ThoiLuong, MaNhanPhim, TenDaoDien, TenDienVienChinh, NgayKhoiChieu)
+                INSERT INTO PHIM (TenPhim, ThoiLuong, MaNhanPhim, TenDaoDien, TenDienVienChinh, NgayKhoiChieu)
                 VALUES (@TenPhim, @ThoiLuong, @MaNhanPhim, @TenDaoDien, @TenDienVienChinh, @NgayKhoiChieu);
                 SELECT LAST_INSERT_ID();";
 
@@ -96,7 +96,7 @@ namespace Cinema_Management_App.Services
         public bool UpdatePhim(Phim phim)
         {
             string query = @"
-                UPDATE Phim
+                UPDATE PHIM
                 SET TenPhim          = @TenPhim,
                     ThoiLuong        = @ThoiLuong,
                     MaNhanPhim       = @MaNhanPhim,
@@ -121,7 +121,7 @@ namespace Cinema_Management_App.Services
         {
             DeleteTheLoai(maPhim); // Xóa liên kết thể loại trước
 
-            string query = "DELETE FROM Phim WHERE MaPhim = @MaPhim";
+            string query = "DELETE FROM PHIM WHERE MaPhim = @MaPhim";
             var parameters = new[] { new MySqlParameter("@MaPhim", maPhim) };
             return _db.ExecuteNonQuery(query, parameters) > 0;
         }
@@ -134,7 +134,7 @@ namespace Cinema_Management_App.Services
                 return true;
 
             var sb = new System.Text.StringBuilder();
-            sb.Append("INSERT INTO PhimTheLoai (MaPhim, MaTheLoai) VALUES ");
+            sb.Append("INSERT INTO CHITIETTHELOAI (MaPhim, MaTheLoai) VALUES ");
 
             var parameters = new List<MySqlParameter>();
             for (int i = 0; i < danhSachMaTheLoai.Count; i++)
@@ -150,7 +150,7 @@ namespace Cinema_Management_App.Services
 
         private void DeleteTheLoai(int maPhim)
         {
-            string query = "DELETE FROM PhimTheLoai WHERE MaPhim = @MaPhim";
+            string query = "DELETE FROM CHITIETTHELOAI WHERE MaPhim = @MaPhim";
             var parameters = new[] { new MySqlParameter("@MaPhim", maPhim) };
             _db.ExecuteNonQuery(query, parameters);
         }

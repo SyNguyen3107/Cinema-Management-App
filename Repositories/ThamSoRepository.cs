@@ -1,4 +1,4 @@
-﻿using Cinema_Management_App.Models;
+using Cinema_Management_App.Models;
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -15,7 +15,7 @@ namespace Cinema_Management_App.Services
 
         public ThamSo GetThamSo()
         {
-            string query = "SELECT MaThamSo, SoLuongTheLoaiToiDa FROM ThamSo LIMIT 1";
+            string query = "SELECT MaThamSo, SoLuongTheLoaiToiDa FROM THAMSO LIMIT 1";
             DataTable dt = _db.ExecuteQuery(query);
 
             if (dt.Rows.Count == 0) return null;
@@ -27,10 +27,20 @@ namespace Cinema_Management_App.Services
             };
         }
 
+        public bool InsertThamSo(ThamSo thamSo)
+        {
+            string query = "INSERT INTO THAMSO (SoLuongTheLoaiToiDa) VALUES (@SoLuongTheLoaiToiDa)";
+            var parameters = new[]
+            {
+                new MySqlParameter("@SoLuongTheLoaiToiDa", thamSo.SoLuongTheLoaiToiDa)
+            };
+            return _db.ExecuteNonQuery(query, parameters) > 0;
+        }
+
         public bool UpdateThamSo(ThamSo thamSo)
         {
             string query = @"
-                UPDATE ThamSo
+                UPDATE THAMSO
                 SET SoLuongTheLoaiToiDa = @SoLuongTheLoaiToiDa
                 WHERE MaThamSo = @MaThamSo";
 

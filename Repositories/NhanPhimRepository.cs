@@ -1,4 +1,4 @@
-﻿using Cinema_Management_App.Models;
+using Cinema_Management_App.Models;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Data;
@@ -18,7 +18,7 @@ namespace Cinema_Management_App.Services
 
         public List<NhanPhim> GetAllNhanPhim()
         {
-            string query = "SELECT MaNhanPhim, TenNhanPhim FROM NhanPhim ORDER BY TenNhanPhim";
+            string query = "SELECT MaNhanPhim, TenNhanPhim FROM NHANPHIM ORDER BY TenNhanPhim";
             DataTable dt = _db.ExecuteQuery(query);
 
             var list = new List<NhanPhim>();
@@ -30,7 +30,7 @@ namespace Cinema_Management_App.Services
 
         public NhanPhim GetNhanPhimById(int maNhanPhim)
         {
-            string query = "SELECT MaNhanPhim, TenNhanPhim FROM NhanPhim WHERE MaNhanPhim = @MaNhanPhim";
+            string query = "SELECT MaNhanPhim, TenNhanPhim FROM NHANPHIM WHERE MaNhanPhim = @MaNhanPhim";
             var parameters = new[] { new MySqlParameter("@MaNhanPhim", maNhanPhim) };
 
             DataTable dt = _db.ExecuteQuery(query, parameters);
@@ -41,7 +41,7 @@ namespace Cinema_Management_App.Services
 
         public bool AddNhanPhim(NhanPhim nhanPhim)
         {
-            string query = "INSERT INTO NhanPhim (TenNhanPhim) VALUES (@TenNhanPhim)";
+            string query = "INSERT INTO NHANPHIM (TenNhanPhim) VALUES (@TenNhanPhim)";
             var parameters = new[] { new MySqlParameter("@TenNhanPhim", nhanPhim.TenNhanPhim) };
             return _db.ExecuteNonQuery(query, parameters) > 0;
         }
@@ -51,7 +51,7 @@ namespace Cinema_Management_App.Services
         public bool UpdateNhanPhim(NhanPhim nhanPhim)
         {
             string query = @"
-                UPDATE NhanPhim
+                UPDATE NHANPHIM
                 SET TenNhanPhim = @TenNhanPhim
                 WHERE MaNhanPhim = @MaNhanPhim";
 
@@ -69,14 +69,14 @@ namespace Cinema_Management_App.Services
         public bool DeleteNhanPhim(int maNhanPhim)
         {
             // Kiểm tra nhãn phim có phim nào đang dùng không
-            string checkQuery = "SELECT COUNT(*) FROM Phim WHERE MaNhanPhim = @MaNhanPhim";
+            string checkQuery = "SELECT COUNT(*) FROM PHIM WHERE MaNhanPhim = @MaNhanPhim";
             var checkParams = new[] { new MySqlParameter("@MaNhanPhim", maNhanPhim) };
             DataTable dt = _db.ExecuteQuery(checkQuery, checkParams);
 
             int soPhimDangDung = Convert.ToInt32(dt.Rows[0][0]);
             if (soPhimDangDung > 0) return false; // Không xóa nếu đang được dùng
 
-            string query = "DELETE FROM NhanPhim WHERE MaNhanPhim = @MaNhanPhim";
+            string query = "DELETE FROM NHANPHIM WHERE MaNhanPhim = @MaNhanPhim";
             var parameters = new[] { new MySqlParameter("@MaNhanPhim", maNhanPhim) };
             return _db.ExecuteNonQuery(query, parameters) > 0;
         }

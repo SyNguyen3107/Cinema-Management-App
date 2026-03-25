@@ -13,3 +13,5 @@ x86/
 *.sln.docstates
 *.pdb
 *.log
+*.txt
+SeedTool/App.config

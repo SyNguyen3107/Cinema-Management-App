@@ -1,4 +1,4 @@
-﻿using Cinema_Management_App.Models;
+using Cinema_Management_App.Models;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Data;
@@ -18,7 +18,7 @@ namespace Cinema_Management_App.Services
 
         public List<TheLoai> GetAllTheLoai()
         {
-            string query = "SELECT MaTheLoai, TenTheLoai FROM TheLoai ORDER BY TenTheLoai";
+            string query = "SELECT MaTheLoai, TenTheLoai FROM THELOAI ORDER BY TenTheLoai";
             DataTable dt = _db.ExecuteQuery(query);
 
             var list = new List<TheLoai>();
@@ -30,7 +30,7 @@ namespace Cinema_Management_App.Services
 
         public TheLoai GetTheLoaiById(int maTheLoai)
         {
-            string query = "SELECT MaTheLoai, TenTheLoai FROM TheLoai WHERE MaTheLoai = @MaTheLoai";
+            string query = "SELECT MaTheLoai, TenTheLoai FROM THELOAI WHERE MaTheLoai = @MaTheLoai";
             var parameters = new[] { new MySqlParameter("@MaTheLoai", maTheLoai) };
 
             DataTable dt = _db.ExecuteQuery(query, parameters);
@@ -41,7 +41,7 @@ namespace Cinema_Management_App.Services
 
         public bool AddTheLoai(TheLoai theLoai)
         {
-            string query = "INSERT INTO TheLoai (TenTheLoai) VALUES (@TenTheLoai)";
+            string query = "INSERT INTO THELOAI (TenTheLoai) VALUES (@TenTheLoai)";
             var parameters = new[] { new MySqlParameter("@TenTheLoai", theLoai.TenTheLoai) };
             return _db.ExecuteNonQuery(query, parameters) > 0;
         }
@@ -51,7 +51,7 @@ namespace Cinema_Management_App.Services
         public bool UpdateTheLoai(TheLoai theLoai)
         {
             string query = @"
-                UPDATE TheLoai
+                UPDATE THELOAI
                 SET TenTheLoai = @TenTheLoai
                 WHERE MaTheLoai = @MaTheLoai";
 
@@ -69,14 +69,14 @@ namespace Cinema_Management_App.Services
         public bool DeleteTheLoai(int maTheLoai)
         {
             // Kiểm tra thể loại có đang được dùng bởi phim nào không
-            string checkQuery = "SELECT COUNT(*) FROM PhimTheLoai WHERE MaTheLoai = @MaTheLoai";
+            string checkQuery = "SELECT COUNT(*) FROM CHITIETTHELOAI WHERE MaTheLoai = @MaTheLoai";
             var checkParams = new[] { new MySqlParameter("@MaTheLoai", maTheLoai) };
             DataTable dt = _db.ExecuteQuery(checkQuery, checkParams);
 
             int soPhimDangDung = Convert.ToInt32(dt.Rows[0][0]);
             if (soPhimDangDung > 0) return false; // Không xóa nếu đang được dùng
 
-            string query = "DELETE FROM TheLoai WHERE MaTheLoai = @MaTheLoai";
+            string query = "DELETE FROM THELOAI WHERE MaTheLoai = @MaTheLoai";
             var parameters = new[] { new MySqlParameter("@MaTheLoai", maTheLoai) };
             return _db.ExecuteNonQuery(query, parameters) > 0;
         }
