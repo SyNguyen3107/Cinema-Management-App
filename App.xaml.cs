@@ -3,9 +3,9 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Cinema_Management_App.Services;
 using Cinema_Management_App.Repositories;
-using Cinema_Management_App.Viewmodels;
 using Cinema_Management_App.Views;
 using Application = System.Windows.Application;
+using Cinema_Management_App.Viewmodels;
 
 namespace Cinema_Management_App
 {
@@ -30,6 +30,8 @@ namespace Cinema_Management_App
 
             // 2. Đăng ký Repositories
             services.AddTransient<PhimRepository>();
+            services.AddTransient<NhanPhimRepository>();
+            services.AddTransient<TheLoaiRepository>();
 
             // 3. Đăng ký ViewModels
             services.AddTransient<CapNhatPhimViewmodel>();

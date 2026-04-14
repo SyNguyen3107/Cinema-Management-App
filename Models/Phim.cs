@@ -12,10 +12,9 @@ namespace Cinema_Management_App.Models
         public string TenPhim { get; set; }
         public int ThoiLuong { get; set; }
         public int MaNhanPhim { get; set; }
+        public int MaTheLoai { get; set; }
         public string TenDaoDien { get; set; }
         public string TenDienVienChinh { get; set; }
         public DateTime NgayKhoiChieu { get; set; }
-
-        public List<int> DanhSachMaTheLoai { get; set; } = new List<int>();
     }
 }

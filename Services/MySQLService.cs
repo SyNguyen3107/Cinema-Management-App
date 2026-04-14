@@ -11,7 +11,7 @@ namespace Cinema_Management_App.Services
 {
     //Đây là class duy nhất có quyền truy cập vào DB, các class khác muốn truy cập DB phải thông qua class này
     
-    internal class MySQLService
+    public class MySQLService
     {
         private readonly string _connectionString;
         public MySQLService()
@@ -54,6 +54,23 @@ namespace Cinema_Management_App.Services
 
                     conn.Open();
                     return cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public object ExecuteScalar(string query, MySqlParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+
+                    conn.Open();
+                    // Hàm này trả về kiểu object vì giá trị lấy lên có thể là int, string, datetime...
+                    return cmd.ExecuteScalar();
                 }
             }
         }

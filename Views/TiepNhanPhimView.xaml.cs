@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,5 +26,15 @@ public partial class TiepNhanPhimView : Window
     {
         InitializeComponent();
         this.DataContext = App.Current.Services.GetService<TiepNhanPhimViewmodel>();
+    }
+    private void ComboBoxTenTheLoai_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        ComboBoxTenTheLoai.IsDropDownOpen = true;
+    }
+    private void ChuyenDuyetNhapSo(object sender, TextCompositionEventArgs e)
+    {
+        Regex regex = new Regex("[^0-9]+");
+
+        e.Handled = regex.IsMatch(e.Text);
     }
 }
