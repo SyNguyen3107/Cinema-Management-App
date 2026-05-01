@@ -63,7 +63,6 @@ namespace Cinema_Management_App.Repositories
 
                 if (result != null)
                 {
-                    // Ép kiểu object về int
                     int newMaPhim = Convert.ToInt32(result);
                 }
                 return false;

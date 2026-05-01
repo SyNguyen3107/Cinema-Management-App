@@ -9,14 +9,12 @@ using System.Threading.Tasks;
 
 namespace Cinema_Management_App.Services
 {
-    //Đây là class duy nhất có quyền truy cập vào DB, các class khác muốn truy cập DB phải thông qua class này
     
     public class MySQLService
     {
         private readonly string _connectionString;
         public MySQLService()
         {
-            // Lấy chuỗi kết nối từ App.config thông qua tên "AivenMySQL"
             _connectionString = ConfigurationManager.ConnectionStrings["AivenMySQL"].ConnectionString;
         }
         public DataTable ExecuteQuery(string query, MySqlParameter[] parameters = null)
@@ -40,7 +38,7 @@ namespace Cinema_Management_App.Services
             }
         }
 
-        // Dùng cho INSERT, UPDATE, DELETE (Trả về số dòng bị ảnh hưởng)
+        // INSERT, UPDATE, DELETE
         public int ExecuteNonQuery(string query, MySqlParameter[] parameters = null)
         {
             using (MySqlConnection conn = new MySqlConnection(_connectionString))
@@ -69,7 +67,6 @@ namespace Cinema_Management_App.Services
                     }
 
                     conn.Open();
-                    // Hàm này trả về kiểu object vì giá trị lấy lên có thể là int, string, datetime...
                     return cmd.ExecuteScalar();
                 }
             }

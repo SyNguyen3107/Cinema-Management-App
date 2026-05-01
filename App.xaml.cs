@@ -11,7 +11,6 @@ namespace Cinema_Management_App
 {
     public partial class App : Application
     {
-        // Tạo bộ cung cấp dịch vụ toàn cục
         public IServiceProvider Services { get; }
 
         public new static App Current => (App)Application.Current;
@@ -25,20 +24,20 @@ namespace Cinema_Management_App
         {
             var services = new ServiceCollection();
 
-            // 1. Đăng ký Services
+            // Services
             services.AddSingleton<MySQLService>();
 
-            // 2. Đăng ký Repositories
+            // Repositories
             services.AddTransient<PhimRepository>();
             services.AddTransient<NhanPhimRepository>();
             services.AddTransient<TheLoaiRepository>();
 
-            // 3. Đăng ký ViewModels
+            // ViewModels
             services.AddTransient<CapNhatPhimViewmodel>();
             services.AddTransient<TiepNhanPhimViewmodel>();
             services.AddTransient<XoaPhimViewmodel>();
 
-            // 4. Đăng ký Views
+            // Views
             services.AddTransient<TiepNhanPhimView>();
             services.AddTransient<CapNhatPhimView>();
             services.AddTransient<XoaPhimView>();
