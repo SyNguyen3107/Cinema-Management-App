@@ -22,6 +22,7 @@ namespace Cinema_Management_App.Views
         public LapDanhSachPhongChieuView()
         {
             InitializeComponent();
+            this.DataContext = new Viewmodels.LapDanhSachPhongChieuViewmodel();
         }
     }
 }

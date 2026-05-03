@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cinema_Management_App.Views"
         mc:Ignorable="d"
-        Title="Lập Danh Sách Phòng Chiếu" Height="750" Width="800"
-        WindowStartupLocation="CenterScreen" Background="#F0F2F5">
-    <Border Background="White" Margin="20" CornerRadius="10" BorderBrush="#DCDFE6" BorderThickness="1">
+        Title="Lập Danh Sách Phòng Chiếu" Height="760" Width="800"
+        WindowStartupLocation="CenterScreen" Background="#F0F2F5"
+        Name="wdLapDanhSach">
+    <Border Background="White" CornerRadius="10" BorderBrush="#DCDFE6" BorderThickness="1" Height="702" VerticalAlignment="Top">
         <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -21,7 +22,10 @@
 
             <DockPanel Grid.Row="0" Margin="0,0,0,20">
                 <TextBlock Text="LẬP DANH SÁCH PHÒNG CHIẾU" FontSize="20" FontWeight="Bold" Foreground="#303133"/>
-                <Button Content="X" DockPanel.Dock="Right" HorizontalAlignment="Right" Width="30" Background="Transparent" BorderThickness="0" Cursor="Hand"/>
+                <Button Content="X" 
+                        Command="{Binding ThoatCommand}" 
+                        CommandParameter="{Binding ElementName=wdLapDanhSach}"
+                        DockPanel.Dock="Right" HorizontalAlignment="Right" Width="30" Background="Transparent" BorderThickness="0" Cursor="Hand"/>
             </DockPanel>
 
             <Grid Grid.Row="1">
@@ -36,17 +40,18 @@
 
                 <StackPanel Margin="0,5,10,10">
                     <TextBlock Text="Mã phòng" Margin="0,0,0,5"/>
-                    <TextBox IsReadOnly="True" Background="#E4E7ED" Padding="5" Text="&lt;Giá trị phát sinh&gt;"/>
+                    <TextBox IsReadOnly="True" Background="#E4E7ED" Padding="5" Text="{Binding MaPhong, Mode=OneWay}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Margin="10,5,0,10">
                     <TextBlock Text="Tên phòng" Margin="0,0,0,5"/>
-                    <TextBox Padding="5"/>
+                    <TextBox Text="{Binding TenPhong, UpdateSourceTrigger=PropertyChanged}" Padding="5"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Margin="0,5,10,10">
                     <TextBlock Text="Tên Loại phòng" Margin="0,0,0,5"/>
-                    <ComboBox Padding="5">
+                    <ComboBox SelectedValue="{Binding ChonLoaiPhong, UpdateSourceTrigger=PropertyChanged}" 
+                              SelectedValuePath="Content" Padding="5">
                         <ComboBoxItem Content="Phòng thường"/>
                         <ComboBoxItem Content="Phòng IMAX"/>
                     </ComboBox>
@@ -54,7 +59,8 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,5,0,10">
                     <TextBlock Text="Tên Tình trạng phòng" Margin="0,0,0,5"/>
-                    <ComboBox Padding="5">
+                    <ComboBox SelectedValue="{Binding ChonTinhTrang, UpdateSourceTrigger=PropertyChanged}" 
+                              SelectedValuePath="Content" Padding="5">
                         <ComboBoxItem Content="Hoạt động"/>
                         <ComboBoxItem Content="Bảo trì"/>
                     </ComboBox>
@@ -63,17 +69,18 @@
 
             <StackPanel Grid.Row="2" Margin="0,5,0,15">
                 <TextBlock Text="Ghi chú" Margin="0,0,0,5"/>
-                <TextBox Padding="5" Height="35"/>
+                <TextBox Text="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}" Padding="5" Height="35"/>
             </StackPanel>
 
-            <DataGrid Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" 
+            <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSachGhe}" AutoGenerateColumns="False" CanUserAddRows="False" 
                       Background="White" BorderBrush="#DCDFE6" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="STT" Binding="{Binding STT}" Width="50" IsReadOnly="True"/>
+
                     <DataGridTemplateColumn Header="MÃ GHẾ" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding MaGhe}" Margin="2"/>
+                                <TextBox Text="{Binding MaGhe, UpdateSourceTrigger=PropertyChanged}" Margin="2"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -81,39 +88,42 @@
                     <DataGridTemplateColumn Header="TÊN LOẠI GHẾ" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <ComboBox SelectedValue="{Binding LoaiGhe}" Margin="2">
-                                    <ComboBoxItem Content="Ghế Thường"/>
-                                    <ComboBoxItem Content="Ghế VIP"/>
-                                </ComboBox>
+                                <ComboBox SelectedValue="{Binding TenLoaiGhe, UpdateSourceTrigger=PropertyChanged}" 
+                                          ItemsSource="{Binding DataContext.ListLoaiGheKhaDung, RelativeSource={RelativeSource AncestorType=DataGrid}}" Margin="2"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="ĐƠN GIÁ" Binding="{Binding DonGia}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="ĐƠN GIÁ" Binding="{Binding DonGia, StringFormat={}{0:N0} VNĐ}" Width="*" IsReadOnly="True"/>
 
                     <DataGridTemplateColumn Width="50">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="X" Foreground="Red" Background="Transparent" BorderThickness="0"/>
+                                <Button Content="X" 
+                                        Command="{Binding DataContext.DeleteGheCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                        CommandParameter="{Binding}" Foreground="Red" Background="Transparent" BorderThickness="0"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Button Grid.Row="4" Content="+" FontSize="20" Width="40" Height="30" Margin="0,10" Background="#F2F6FC" BorderBrush="#DCDFE6"/>
+            <Button Grid.Row="4" Command="{Binding ThemGheCommand}" Content="+" FontSize="20" Width="40" Height="30" Margin="0,10" Background="#F2F6FC" BorderBrush="#DCDFE6"/>
 
             <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
                 <TextBlock Text="Tổng giá trị" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Width="150" IsReadOnly="True" Background="#E4E7ED" Padding="5" Text="0"/>
+                <TextBox Text="{Binding TongGiaTri, StringFormat={}{0:N0} VNĐ}" Width="150" IsReadOnly="True" Background="#E4E7ED" Padding="5"/>
             </StackPanel>
 
             <Grid Grid.Row="6" Margin="0,20,0,0">
-                <Button Content="Thoát" HorizontalAlignment="Left" Width="100" Padding="8" Background="#409EFF" Foreground="White" FontWeight="Bold"/>
+                <Button Content="Thoát" 
+                        Command="{Binding ThoatCommand}" 
+                        CommandParameter="{Binding ElementName=wdLapDanhSach}"
+                        HorizontalAlignment="Left" Width="100" Padding="8" Background="#409EFF" Foreground="White" FontWeight="Bold"/>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Tra cứu phòng chiếu" Width="150" Padding="8" Margin="0,0,10,0" Background="#409EFF" FontWeight="Bold" Foreground="White"/>
-                    <Button Content="Lưu thông tin" Width="120" Padding="8" Background="#409EFF" Foreground="White" FontWeight="Bold"/>
+                    <Button Content="Tra cứu phòng chiếu" Command="{Binding TraCuuPhongChieuCommand}" Width="150" Padding="8" Margin="0,0,10,0" Background="#409EFF" FontWeight="Bold" Foreground="White"/>
+                    <Button Content="Lưu thông tin" Command="{Binding LuuThongTinCommand}" Width="120" Padding="8" Background="#409EFF" Foreground="White" FontWeight="Bold"/>
                 </StackPanel>
             </Grid>
         </Grid>
