@@ -11,7 +11,6 @@ namespace Cinema_Management_App.Viewmodels
 {
     public partial class LapDanhSachPhongChieuViewmodel : ObservableObject
     {
-        // Khởi tạo Repository một lần duy nhất
         private readonly PhongChieuRepository _repo = new PhongChieuRepository();
 
         [ObservableProperty]
@@ -29,7 +28,6 @@ namespace Cinema_Management_App.Viewmodels
             DanhSachGhe.Clear();
             TinhTongGiaTri();
         }
-
         [ObservableProperty]
         private string _chonTinhTrang;
 
@@ -52,10 +50,7 @@ namespace Cinema_Management_App.Viewmodels
                 MessageBox.Show("Vui lòng chọn loại phòng trước!");
                 return;
             }
-
             var newGhe = new Ghe { STT = DanhSachGhe.Count + 1 };
-
-            // Đăng ký sự kiện cập nhật tổng tiền
             newGhe.PropertyChanged += (s, e) => {
                 if (e.PropertyName == nameof(Ghe.DonGia))
                 {
@@ -81,7 +76,6 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void LuuThongTin()
         {
-            // 1. Validation (Kiểm tra dữ liệu)
             if (string.IsNullOrEmpty(TenPhong))
             {
                 MessageBox.Show("Vui lòng nhập tên phòng chiếu!");
@@ -97,11 +91,8 @@ namespace Cinema_Management_App.Viewmodels
                 MessageBox.Show("Phòng chiếu phải có ít nhất một ghế!");
                 return;
             }
-
             try
             {
-                // 2. Chuyển đổi dữ liệu hiển thị sang ID database
-                // Lưu ý: ID này phải khớp với bảng LOAIPHONG và TINHTRANGPHONG trong MySQL
                 int maLoai = (ChonLoaiPhong == "Phòng thường") ? 1 : 2;
                 int maTT = (ChonTinhTrang == "Hoạt động") ? 1 : 2;
 
@@ -113,12 +104,10 @@ namespace Cinema_Management_App.Viewmodels
                     GhiChu = GhiChu,
                     TongGiaTri = TongGiaTri
                 };
-
-                // 3. Thực hiện lưu thông qua Repository
                 if (_repo.LuuPhongChieu(newPhong, DanhSachGhe))
                 {
                     MessageBox.Show("Lưu thông tin phòng chiếu vào MySQL thành công!");
-                    ResetForm(); // Xóa sạch form sau khi lưu
+                    ResetForm();
                 }
                 else
                 {
@@ -130,7 +119,6 @@ namespace Cinema_Management_App.Viewmodels
                 MessageBox.Show($"Lỗi hệ thống: {ex.Message}");
             }
         }
-
         private void ResetForm()
         {
             TenPhong = string.Empty;
