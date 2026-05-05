@@ -1,10 +1,11 @@
 ﻿using Cinema_Management_App.Models;
+using Cinema_Management_App.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 
 namespace Cinema_Management_App.Viewmodels
 {
@@ -18,8 +19,6 @@ namespace Cinema_Management_App.Viewmodels
 
         [ObservableProperty]
         private string _chonLoaiPhong;
-
-        // Sửa tham số value thành kiểu string? để an toàn hơn
         partial void OnChonLoaiPhongChanged(string value)
         {
             CapNhatLoaiGheKhaDung();
@@ -75,16 +74,45 @@ namespace Cinema_Management_App.Viewmodels
                 TinhTongGiaTri();
             }
         }
-
+        private readonly PhongChieuRepository _repo = new PhongChieuRepository();
         [RelayCommand]
-        private void LuuThongTin() => MessageBox.Show("Đã lưu thành công!");
+        private void LuuThongTin()
+        {
+            try
+            {
+                // Chuyển đổi tên loại phòng sang ID (Ví dụ: Phòng thường = 1, IMAX = 2)
+                int maLoai = ChonLoaiPhong == "Phòng thường" ? 1 : 2;
+                int maTT = ChonTinhTrang == "Hoạt động" ? 1 : 2;
+
+                var newPhong = new PhongChieu
+                {
+                    TenPhong = TenPhong,
+                    MaLoaiPhong = maLoai,
+                    MaTinhTrang = maTT,
+                    GhiChu = GhiChu,
+                    TongGiaTri = TongGiaTri
+                };
+
+                if (_repo.LuuPhongChieu(newPhong, DanhSachGhe))
+                {
+                    MessageBox.Show("Lưu dữ liệu vào MySQL thành công!");
+                }
+                else
+                {
+                    MessageBox.Show("Lưu thất bại. Vui lòng kiểm tra lại kết nối.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}");
+            }
+        }
 
         [RelayCommand]
         private void Thoat(Window p) => p?.Close();
 
         private void CapNhatLoaiGheKhaDung()
         {
-            // Luôn dùng biến có dấu gạch dưới _ khi đang viết trong ViewModel này
             _listLoaiGheKhaDung.Clear();
             if (_chonLoaiPhong == "Phòng thường")
             {
@@ -101,10 +129,7 @@ namespace Cinema_Management_App.Viewmodels
 
         private void TinhTongGiaTri()
         {
-            // Tính toán dựa trên danh sách ghế
             decimal tempTong = DanhSachGhe.Sum(x => x.DonGia);
-
-            // Gán cho Property để UI cập nhật (Thư viện sinh ra TongGiaTri từ _tongGiaTri)
             TongGiaTri = tempTong;
         }
     }

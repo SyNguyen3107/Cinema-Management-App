@@ -1,40 +1,26 @@
-﻿using System;
-using Cinema_Management_App.Viewmodels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace Cinema_Management_App.Models
 {
-    public class Ghe : BaseViewModel
+    public partial class Ghe : ObservableObject
     {
-        private int _stt;
+        [ObservableProperty]
+        private int _sTT;
+
+        [ObservableProperty]
         private string _maGhe = string.Empty;
+
+        [ObservableProperty]
         private string _tenLoaiGhe = string.Empty;
+
+        [ObservableProperty]
         private decimal _donGia;
-        public int STT
+        partial void OnTenLoaiGheChanged(string value)
         {
-            get => _stt;
-            set { _stt = value; OnPropertyChanged(); }
-        }
-        public string MaGhe
-        {
-            get => _maGhe;
-            set { _maGhe = value; OnPropertyChanged(); }
+            CapNhatDonGia();
         }
 
-        public string TenLoaiGhe
-        {
-            get => _tenLoaiGhe;
-            set
-            {
-                _tenLoaiGhe = value;
-                OnPropertyChanged();
-                CapNhatDonGia();
-            }
-        }
-        public decimal DonGia
-        {
-            get => _donGia;
-            set { _donGia = value; OnPropertyChanged(); }
-        }
         private void CapNhatDonGia()
         {
             switch (TenLoaiGhe)
