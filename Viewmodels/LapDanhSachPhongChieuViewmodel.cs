@@ -77,10 +77,51 @@ namespace Cinema_Management_App.Viewmodels
         }
 
         [RelayCommand]
-        private void LuuThongTin() => MessageBox.Show("Đã lưu thành công!");
+        private void LuuThongTin()
+        {
+            // Kiểm tra dữ liệu đầu vào cơ bản
+            if (string.IsNullOrEmpty(TenPhong))
+            {
+                MessageBox.Show("Vui lòng nhập tên phòng chiếu!");
+                return;
+            }
+
+            if (DanhSachGhe.Count == 0)
+            {
+                MessageBox.Show("Phòng chiếu phải có ít nhất một ghế!");
+                return;
+            }
+
+            var repo = new Repositories.PhongChieuRepository();
+            if (repo.SaveFullRoom(this))
+            {
+                MessageBox.Show("Lưu thông tin phòng chiếu thành công!");
+                // Reset form sau khi lưu thành công nếu cần
+                ResetForm();
+            }
+            else
+            {
+                MessageBox.Show("Lỗi: Không thể kết nối hoặc lưu vào cơ sở dữ liệu!");
+            }
+        }
+        private void ResetForm()
+        {
+            TenPhong = string.Empty;
+            GhiChu = string.Empty;
+            DanhSachGhe.Clear();
+            MaPhong = "PC" + DateTime.Now.ToString("ddMMyyHHmm");
+            TinhTongGiaTri();
+        }
 
         [RelayCommand]
         private void Thoat(Window p) => p?.Close();
+
+        [RelayCommand]
+        private void TraCuuPhongChieu()
+        {
+            // Mở cửa sổ tra cứu phòng chiếu
+            MessageBox.Show("Mở cửa sổ tra cứu phòng chiếu...");
+        }
 
         private void CapNhatLoaiGheKhaDung()
         {

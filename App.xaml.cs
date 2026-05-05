@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Cinema_Management_App.Services;
 using Cinema_Management_App.Repositories;
 using Cinema_Management_App.Views;
