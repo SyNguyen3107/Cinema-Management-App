@@ -1,4 +1,6 @@
-﻿namespace Cinema_Management_App.Models
+﻿using System.Collections.ObjectModel;
+
+namespace Cinema_Management_App.Models
 {
     public class PhongChieu
     {
@@ -8,5 +10,6 @@
         public int MaTinhTrang { get; set; }
         public string GhiChu { get; set; }
         public decimal TongGiaTri { get; set; }
+        public ObservableCollection<Ghe> DanhSachGhe { get; set; } = new ObservableCollection<Ghe>();
     }
 }

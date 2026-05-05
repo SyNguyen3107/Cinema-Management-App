@@ -1,4 +1,10 @@
-﻿using MySql.Data.MySqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Cinema_Management_App.Services;
+using MySql.Data.MySqlClient;
 using System.Configuration;
 using System.Collections.Generic;
 using Cinema_Management_App.Models;
@@ -17,8 +23,8 @@ namespace Cinema_Management_App.Repositories
                 conn.Open();
                 using (var trans = conn.BeginTransaction())
                 {
-                    try
-                    {
+            try
+            {
                         string queryPhong = @"INSERT INTO PHONGCHIEU (TenPhong, MaLoaiPhong, MaTinhTrang, GhiChu, TongGiaTri) 
                                             VALUES (@ten, @loai, @tt, @gc, @tong); SELECT LAST_INSERT_ID();";
 
@@ -30,7 +36,7 @@ namespace Cinema_Management_App.Repositories
                         cmdPhong.Parameters.AddWithValue("@tong", phong.TongGiaTri);
                         int newMaPhong = Convert.ToInt32(cmdPhong.ExecuteScalar());
                         foreach (var ghe in dsGhe)
-                        {
+                {
                             string queryGhe = @"INSERT INTO GHE (MaSoGhe, MaPhong, MaLoaiGhe) 
                                               VALUES (@ms, @mp, @mlg)";
                             MySqlCommand cmdGhe = new MySqlCommand(queryGhe, conn, trans);
@@ -38,11 +44,11 @@ namespace Cinema_Management_App.Repositories
                             cmdGhe.Parameters.AddWithValue("@mp", newMaPhong);
                             cmdGhe.Parameters.AddWithValue("@mlg", ghe.TenLoaiGhe);
                             cmdGhe.ExecuteNonQuery();
-                        }
+                }
 
                         trans.Commit();
-                        return true;
-                    }
+                return true;
+            }
                     catch (Exception)
                     {
                         trans.Rollback();

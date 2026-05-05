@@ -89,7 +89,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <ComboBox SelectedValue="{Binding TenLoaiGhe, UpdateSourceTrigger=PropertyChanged}" 
-                                          ItemsSource="{Binding DataContext.ListLoaiGheKhaDung, RelativeSource={RelativeSource AncestorType=DataGrid}}" Margin="2"/>
+                                          ItemsSource="{Binding DataContext.ListLoaiGheKhaDung, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}" Margin="2"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
