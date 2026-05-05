@@ -3,22 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Cinema_Management_App.Services
 {
-
     public class MySQLService
     {
         private readonly string _connectionString;
 
         public MySQLService()
         {
-            // Cố gắng lấy connection string từ ConfigurationManager (App.config)
-            var connStringFromConfig = ConfigurationManager.ConnectionStrings["AivenMySQL"]?.ConnectionString;
+            // Ưu tiên lấy từ App.config (ConfigurationManager)
+            var connStringFromConfig = System.Configuration.ConfigurationManager.ConnectionStrings["AivenMySQL"]?.ConnectionString;
 
             if (!string.IsNullOrEmpty(connStringFromConfig))
             {
@@ -26,26 +22,29 @@ namespace Cinema_Management_App.Services
             }
             else
             {
-                // Nếu không có, lấy từ appsettings.json
+                // Backup: lấy từ appsettings.json
                 var config = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                     .Build();
 
-                _connectionString = config.GetConnectionString("AivenMySQL") ?? 
+                _connectionString = config.GetConnectionString("AivenMySQL") ??
                     throw new InvalidOperationException("Connection string 'AivenMySQL' not found.");
             }
         }
+
+        // BỔ SUNG: Cho phép các Repository lấy connection để tự quản lý Transaction
+        public MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(_connectionString);
+        }
+
         public DataTable ExecuteQuery(string query, MySqlParameter[] parameters = null)
         {
-            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            using (MySqlConnection conn = GetConnection())
             {
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
                     {
                         DataTable dt = new DataTable();
@@ -56,34 +55,26 @@ namespace Cinema_Management_App.Services
             }
         }
 
-        // INSERT, UPDATE, DELETE
         public int ExecuteNonQuery(string query, MySqlParameter[] parameters = null)
         {
-            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            using (MySqlConnection conn = GetConnection())
             {
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
                     conn.Open();
                     return cmd.ExecuteNonQuery();
                 }
             }
         }
+
         public object ExecuteScalar(string query, MySqlParameter[] parameters = null)
         {
-            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            using (MySqlConnection conn = GetConnection())
             {
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
                     conn.Open();
                     return cmd.ExecuteScalar();
                 }
