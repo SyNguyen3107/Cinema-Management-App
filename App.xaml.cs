@@ -35,11 +35,10 @@ namespace Cinema_Management_App
             services.AddTransient<PhongChieuRepository>();
             services.AddTransient<LoaiPhongRepository>();
             services.AddTransient<LoaiGheRepository>();
+            services.AddTransient<TinhTrangPhongRepository>();
 
             // ViewModels
-            services.AddTransient<CapNhatPhimViewmodel>();
             services.AddTransient<TiepNhanPhimViewmodel>();
-            services.AddTransient<XoaPhimViewmodel>();
             services.AddTransient<LapDanhSachPhongChieuViewmodel>();
 
             // Views

@@ -31,8 +31,6 @@ namespace Cinema_Management_App.Services
                     throw new InvalidOperationException("Connection string 'AivenMySQL' not found.");
             }
         }
-
-        // BỔ SUNG: Cho phép các Repository lấy connection để tự quản lý Transaction
         public MySqlConnection GetConnection()
         {
             return new MySqlConnection(_connectionString);

@@ -5,6 +5,8 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Documents;
+using System.Linq;
 
 namespace Cinema_Management_App.Viewmodels
 {
@@ -13,23 +15,30 @@ namespace Cinema_Management_App.Viewmodels
         private readonly PhongChieuRepository _phongChieuRepo;
         private readonly LoaiPhongRepository _loaiPhongRepo;
         private readonly LoaiGheRepository _loaiGheRepo;
-
+        private readonly TinhTrangPhongRepository _tinhTrangPhongRepo;
         public LapDanhSachPhongChieuViewmodel(
             PhongChieuRepository phongChieuRepo,
             LoaiPhongRepository loaiPhongRepo,
-            LoaiGheRepository loaiGheRepo)
+            LoaiGheRepository loaiGheRepo,
+            TinhTrangPhongRepository tinhTrangPhongRepo)
         {
             _phongChieuRepo = phongChieuRepo;
             _loaiPhongRepo = loaiPhongRepo;
             _loaiGheRepo = loaiGheRepo;
+            _tinhTrangPhongRepo = tinhTrangPhongRepo;
 
-            LoadDuLieuBanDau();
-            TaoMaPhongMoi();
+            Load();
+            if (_phongChieuRepo != null)
+            {
+                MaPhong = _phongChieuRepo.GetMaPhongChieuMoi();
+            }
         }
 
         // --- PROPERTIES ---
         [ObservableProperty]
-        private ObservableCollection<LoaiPhong> _danhSachLoaiPhong = new ObservableCollection<LoaiPhong>();
+        private ObservableCollection<LoaiPhong> _danhSachLoaiPhong;
+        [ObservableProperty]
+        private ObservableCollection<TinhTrangPhong> _danhSachTinhTrangPhong;
 
         [ObservableProperty]
         private LoaiPhong _loaiPhongDuocChon;
@@ -41,10 +50,10 @@ namespace Cinema_Management_App.Viewmodels
         private string _tenPhong;
 
         [ObservableProperty]
-        private string _ghiChu; // Đã sửa lỗi thiếu dấu chấm phẩy
+        private string _ghiChu;
 
         [ObservableProperty]
-        private string _chonTinhTrang = "Hoạt động"; // Khởi tạo giá trị mặc định
+        private TinhTrangPhong _chonTinhTrang;
 
 
         [ObservableProperty]
@@ -54,25 +63,29 @@ namespace Cinema_Management_App.Viewmodels
         private ObservableCollection<Ghe> _danhSachGhe = new();
 
         // --- METHODS ---
-        private void LoadDuLieuBanDau()
+        private void Load()
         {
-            var dsPhong = _loaiPhongRepo.GetAllLoaiPhong();
-            DanhSachLoaiPhong = new ObservableCollection<LoaiPhong>(dsPhong);
+            try
+            {
+                var dsTinhTrang = _tinhTrangPhongRepo.GetAllTinhTrangPhong();
+                var dsLoaiPhong = _loaiPhongRepo.GetAllLoaiPhong();
+
+                DanhSachLoaiPhong = new ObservableCollection<LoaiPhong>(dsLoaiPhong);
+                DanhSachTinhTrangPhong = new ObservableCollection<TinhTrangPhong>(dsTinhTrang);
+
+            }
+            catch
+            {
+                MessageBox.Show("Lỗi khi tải dữ liệu từ CSDL. Vui lòng kiểm tra kết nối và thử lại.", "Lỗi");
+            }
         }
 
-        private void TaoMaPhongMoi()
-        {
-            // Tự động generate Mã Phòng (Bạn có thể sửa logic này theo quy tắc của CSDL)
-            MaPhong = "PC" + DateTime.Now.ToString("HHmmss");
-        }
 
-        // Tự động bắt sự kiện khi thuộc tính LoaiPhongDuocChon thay đổi nhờ CommunityToolkit
         partial void OnLoaiPhongDuocChonChanged(LoaiPhong value)
         {
             ListLoaiGheKhaDung.Clear();
             if (value != null)
             {
-                // Lấy danh sách Loại ghế dựa trên Quy định loại ghế của Loại phòng đó
                 var dsLoaiGhe = _loaiGheRepo.GetAllLoaiGheByMaLoaiPhong(value.MaLoaiPhong);
                 foreach (var lg in dsLoaiGhe)
                 {
@@ -87,12 +100,13 @@ namespace Cinema_Management_App.Viewmodels
         {
             DanhSachGhe.Add(new Ghe
             {
+                MaGhe = Guid.NewGuid().ToString("N").Substring(0, 10),
                 MaPhong = this.MaPhong
             });
         }
 
         [RelayCommand]
-        private void DeleteGhe(Ghe ghe)
+        private void XoaGhe(Ghe ghe)
         {
             if (ghe != null)
             {
@@ -108,14 +122,16 @@ namespace Cinema_Management_App.Viewmodels
             ListLoaiGheKhaDung.Clear();
             TenPhong = string.Empty;
             GhiChu = string.Empty;
-            ChonTinhTrang = "Hoạt động";
-            TaoMaPhongMoi();
+            ChonTinhTrang = null;
+            if (_phongChieuRepo != null)
+            {
+                MaPhong = _phongChieuRepo.GetMaPhongChieuMoi();
+            }
         }
 
         [RelayCommand]
         private void Thoat(Window window)
         {
-            // Đóng cửa sổ hiện tại nếu có truyền CommandParameter[cite: 3, 21], ngược lại Shutdown app
             if (window != null)
             {
                 window.Close();
@@ -129,41 +145,23 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void LuuThongTin()
         {
-            if (string.IsNullOrEmpty(TenPhong))
-            {
-                MessageBox.Show("Vui lòng nhập tên phòng!", "Cảnh báo");
+            if (!KiemTraThongTin())
                 return;
-            }
-            if (LoaiPhongDuocChon == null)
-            {
-                MessageBox.Show("Vui lòng chọn loại phòng!", "Cảnh báo");
-                return;
-            }
-            if (DanhSachGhe.Count == 0)
-            {
-                MessageBox.Show("Phòng chiếu phải có ít nhất 1 ghế!", "Cảnh báo");
-                return;
-            }
 
             try
             {
-                int maTT = (ChonTinhTrang == "Hoạt động") ? 1 : 2;
-
                 var newPhong = new PhongChieu
                 {
                     MaPhong = this.MaPhong,
                     TenPhong = this.TenPhong,
-                    // Đã bỏ int.Parse vì LoaiPhongRepository lấy lên chuỗi string
                     MaLoaiPhong = LoaiPhongDuocChon.MaLoaiPhong,
-                    MaTinhTrang = maTT.ToString(),
+                    MaTinhTrang = ChonTinhTrang?.MaTinhTrang.ToString(),
                     GhiChu = this.GhiChu
                 };
-
-                // AddPhongChieu sẽ nhận dữ liệu phòng và mảng ghế để insert
                 if (_phongChieuRepo.AddPhongChieu(newPhong, DanhSachGhe))
                 {
                     MessageBox.Show("Lưu thông tin phòng chiếu thành công!");
-                    PhongChieuMoi(); // Thay thế cho ResetForm()
+                    PhongChieuMoi();
                 }
                 else
                 {
@@ -174,6 +172,74 @@ namespace Cinema_Management_App.Viewmodels
             {
                 MessageBox.Show($"Lỗi khi lưu thông tin: {ex.Message}");
             }
+        }
+        private bool KiemTraThongTin()
+        {
+            if (string.IsNullOrEmpty(TenPhong))
+            {
+                MessageBox.Show("Vui lòng nhập tên phòng!", "Cảnh báo");
+                return false;
+            }
+
+            if (LoaiPhongDuocChon == null)
+            {
+                MessageBox.Show("Vui lòng chọn loại phòng!", "Cảnh báo");
+                return false;
+            }
+
+            if (DanhSachGhe.Count == 0)
+            {
+                MessageBox.Show("Phòng chiếu phải có ít nhất 1 ghế!", "Cảnh báo");
+                return false;
+            }
+
+            foreach (var ghe in DanhSachGhe)
+            {
+                if (string.IsNullOrEmpty(ghe.MaLoaiGhe))
+                {
+                    MessageBox.Show(
+                        $"Ghế {ghe.MaSoGhe} chưa chọn loại ghế!",
+                        "Cảnh báo"
+                    );
+
+                    return false;
+                }
+
+                bool hopLe = ListLoaiGheKhaDung
+                    .Any(lg => lg.MaLoaiGhe == ghe.MaLoaiGhe);
+
+                if (!hopLe)
+                {
+                    MessageBox.Show(
+                        $"Ghế {ghe.MaSoGhe} không phù hợp với loại phòng!",
+                        "Cảnh báo"
+                    );
+
+                    return false;
+                }
+                var gheTrung = DanhSachGhe
+    .GroupBy(g => g.MaSoGhe)
+    .FirstOrDefault(g => g.Count() > 1);
+
+                if (gheTrung != null)
+                {
+                    MessageBox.Show(
+                        $"Số ghế {gheTrung.Key} bị trùng!",
+                        "Cảnh báo"
+                    );
+
+                    return false;
+                }
+            }
+            foreach (var ghe in DanhSachGhe)
+            {
+                if (string.IsNullOrWhiteSpace(ghe.MaSoGhe))
+                {
+                    MessageBox.Show("Có ghế chưa nhập số ghế!", "Cảnh báo");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
