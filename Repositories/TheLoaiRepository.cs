@@ -18,7 +18,7 @@ namespace Cinema_Management_App.Repositories
         public List<TheLoai> GetAllTheLoai()
         {
             List<TheLoai> danhSach = new List<TheLoai>();
-            string query = "SELECT * FROM THELOAI";
+            string query = "SELECT * FROM QuanLyPhim.THELOAI";
 
             DataTable dt = _dbService.ExecuteQuery(query);
 
@@ -26,7 +26,7 @@ namespace Cinema_Management_App.Repositories
             {
                 danhSach.Add(new TheLoai
                 {
-                    MaTheLoai = Convert.ToInt32(row["MaTheLoai"]),
+                    MaTheLoai = row["MaTheLoai"].ToString() ?? string.Empty,
                     TenTheLoai = row["TenTheLoai"].ToString(),
                 });
             }

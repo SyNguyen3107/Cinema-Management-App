@@ -18,7 +18,7 @@ namespace Cinema_Management_App.Repositories
         public List<NhanPhim> GetAllNhanPhim()
         {
             List<NhanPhim> danhSach = new List<NhanPhim>();
-            string query = "SELECT * FROM NHANPHIM";
+            string query = "SELECT * FROM QuanLyPhim.NHANPHIM";
             DataTable dt = _dbService.ExecuteQuery(query);
 
             foreach (DataRow row in dt.Rows)
@@ -26,7 +26,7 @@ namespace Cinema_Management_App.Repositories
                 danhSach.Add(new NhanPhim
                 {
                     MaNhanPhim = Convert.ToInt32(row["MaNhanPhim"]),
-                    TenNhanPhim = row["TenNhanPhim"].ToString()
+                    TenNhanPhim = row["TenNhanPhim"].ToString() ?? string.Empty
                 });
             }
             return danhSach;

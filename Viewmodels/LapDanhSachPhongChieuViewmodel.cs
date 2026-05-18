@@ -4,72 +4,125 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows;
 
 namespace Cinema_Management_App.Viewmodels
 {
     public partial class LapDanhSachPhongChieuViewmodel : ObservableObject
     {
-        private readonly PhongChieuRepository _repo = new PhongChieuRepository();
+        private readonly PhongChieuRepository _phongChieuRepo;
+        private readonly LoaiPhongRepository _loaiPhongRepo;
+        private readonly LoaiGheRepository _loaiGheRepo;
+
+        public LapDanhSachPhongChieuViewmodel(
+            PhongChieuRepository phongChieuRepo,
+            LoaiPhongRepository loaiPhongRepo,
+            LoaiGheRepository loaiGheRepo)
+        {
+            _phongChieuRepo = phongChieuRepo;
+            _loaiPhongRepo = loaiPhongRepo;
+            _loaiGheRepo = loaiGheRepo;
+
+            LoadDuLieuBanDau();
+            TaoMaPhongMoi();
+        }
+
+        // --- PROPERTIES ---
+        [ObservableProperty]
+        private ObservableCollection<LoaiPhong> _danhSachLoaiPhong = new ObservableCollection<LoaiPhong>();
 
         [ObservableProperty]
-        private string _maPhong = "PC" + DateTime.Now.ToString("ddMMyyHHmm");
+        private LoaiPhong _loaiPhongDuocChon;
+
+        [ObservableProperty]
+        private string _maPhong;
 
         [ObservableProperty]
         private string _tenPhong;
 
         [ObservableProperty]
-        private string _chonLoaiPhong;
+        private string _ghiChu; // Đã sửa lỗi thiếu dấu chấm phẩy
 
-        partial void OnChonLoaiPhongChanged(string value)
+        [ObservableProperty]
+        private string _chonTinhTrang = "Hoạt động"; // Khởi tạo giá trị mặc định
+
+
+        [ObservableProperty]
+        private ObservableCollection<LoaiGhe> _listLoaiGheKhaDung = new ObservableCollection<LoaiGhe>();
+
+        [ObservableProperty]
+        private ObservableCollection<Ghe> _danhSachGhe = new();
+
+        // --- METHODS ---
+        private void LoadDuLieuBanDau()
         {
-            CapNhatLoaiGheKhaDung();
-            DanhSachGhe.Clear();
-            TinhTongGiaTri();
+            var dsPhong = _loaiPhongRepo.GetAllLoaiPhong();
+            DanhSachLoaiPhong = new ObservableCollection<LoaiPhong>(dsPhong);
         }
-        [ObservableProperty]
-        private string _chonTinhTrang;
 
-        [ObservableProperty]
-        private string _ghiChu;
+        private void TaoMaPhongMoi()
+        {
+            // Tự động generate Mã Phòng (Bạn có thể sửa logic này theo quy tắc của CSDL)
+            MaPhong = "PC" + DateTime.Now.ToString("HHmmss");
+        }
 
-        [ObservableProperty]
-        private decimal _tongGiaTri;
+        // Tự động bắt sự kiện khi thuộc tính LoaiPhongDuocChon thay đổi nhờ CommunityToolkit
+        partial void OnLoaiPhongDuocChonChanged(LoaiPhong value)
+        {
+            ListLoaiGheKhaDung.Clear();
+            if (value != null)
+            {
+                // Lấy danh sách Loại ghế dựa trên Quy định loại ghế của Loại phòng đó
+                var dsLoaiGhe = _loaiGheRepo.GetAllLoaiGheByMaLoaiPhong(value.MaLoaiPhong);
+                foreach (var lg in dsLoaiGhe)
+                {
+                    ListLoaiGheKhaDung.Add(lg);
+                }
+            }
+        }
 
-        [ObservableProperty]
-        private ObservableCollection<string> _listLoaiGheKhaDung = new ObservableCollection<string>();
-
-        public ObservableCollection<Ghe> DanhSachGhe { get; set; } = new ObservableCollection<Ghe>();
-
+        // --- COMMANDS ---
         [RelayCommand]
         private void ThemGhe()
         {
-            if (string.IsNullOrEmpty(ChonLoaiPhong))
+            DanhSachGhe.Add(new Ghe
             {
-                MessageBox.Show("Vui lòng chọn loại phòng trước!");
-                return;
-            }
-            var newGhe = new Ghe { STT = DanhSachGhe.Count + 1 };
-            newGhe.PropertyChanged += (s, e) => {
-                if (e.PropertyName == nameof(Ghe.DonGia))
-                {
-                    TinhTongGiaTri();
-                }
-            };
-
-            DanhSachGhe.Add(newGhe);
+                MaPhong = this.MaPhong
+            });
         }
 
         [RelayCommand]
-        private void DeleteGhe(Ghe p)
+        private void DeleteGhe(Ghe ghe)
         {
-            if (p != null)
+            if (ghe != null)
             {
-                DanhSachGhe.Remove(p);
-                for (int i = 0; i < DanhSachGhe.Count; i++)
-                    DanhSachGhe[i].STT = i + 1;
-                TinhTongGiaTri();
+                DanhSachGhe.Remove(ghe);
+            }
+        }
+
+        [RelayCommand]
+        private void PhongChieuMoi()
+        {
+            DanhSachGhe.Clear();
+            LoaiPhongDuocChon = null;
+            ListLoaiGheKhaDung.Clear();
+            TenPhong = string.Empty;
+            GhiChu = string.Empty;
+            ChonTinhTrang = "Hoạt động";
+            TaoMaPhongMoi();
+        }
+
+        [RelayCommand]
+        private void Thoat(Window window)
+        {
+            // Đóng cửa sổ hiện tại nếu có truyền CommandParameter[cite: 3, 21], ngược lại Shutdown app
+            if (window != null)
+            {
+                window.Close();
+            }
+            else
+            {
+                Application.Current.Shutdown();
             }
         }
 
@@ -78,87 +131,49 @@ namespace Cinema_Management_App.Viewmodels
         {
             if (string.IsNullOrEmpty(TenPhong))
             {
-                MessageBox.Show("Vui lòng nhập tên phòng chiếu!");
+                MessageBox.Show("Vui lòng nhập tên phòng!", "Cảnh báo");
                 return;
             }
-            if (string.IsNullOrEmpty(ChonLoaiPhong))
+            if (LoaiPhongDuocChon == null)
             {
-                MessageBox.Show("Vui lòng chọn loại phòng!");
+                MessageBox.Show("Vui lòng chọn loại phòng!", "Cảnh báo");
                 return;
             }
             if (DanhSachGhe.Count == 0)
             {
-                MessageBox.Show("Phòng chiếu phải có ít nhất một ghế!");
+                MessageBox.Show("Phòng chiếu phải có ít nhất 1 ghế!", "Cảnh báo");
                 return;
             }
+
             try
             {
-                int maLoai = (ChonLoaiPhong == "Phòng thường") ? 1 : 2;
                 int maTT = (ChonTinhTrang == "Hoạt động") ? 1 : 2;
 
                 var newPhong = new PhongChieu
                 {
-                    TenPhong = TenPhong,
-                    MaLoaiPhong = maLoai,
-                    MaTinhTrang = maTT,
-                    GhiChu = GhiChu,
-                    TongGiaTri = TongGiaTri
+                    MaPhong = this.MaPhong,
+                    TenPhong = this.TenPhong,
+                    // Đã bỏ int.Parse vì LoaiPhongRepository lấy lên chuỗi string
+                    MaLoaiPhong = LoaiPhongDuocChon.MaLoaiPhong,
+                    MaTinhTrang = maTT.ToString(),
+                    GhiChu = this.GhiChu
                 };
-                if (_repo.LuuPhongChieu(newPhong, DanhSachGhe))
+
+                // AddPhongChieu sẽ nhận dữ liệu phòng và mảng ghế để insert
+                if (_phongChieuRepo.AddPhongChieu(newPhong, DanhSachGhe))
                 {
-                    MessageBox.Show("Lưu thông tin phòng chiếu vào MySQL thành công!");
-                    ResetForm();
+                    MessageBox.Show("Lưu thông tin phòng chiếu thành công!");
+                    PhongChieuMoi(); // Thay thế cho ResetForm()
                 }
                 else
                 {
-                    MessageBox.Show("Lỗi: Không thể kết nối hoặc lưu vào cơ sở dữ liệu!");
+                    MessageBox.Show("Lưu thất bại, vui lòng kiểm tra lại CSDL.");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi hệ thống: {ex.Message}");
+                MessageBox.Show($"Lỗi khi lưu thông tin: {ex.Message}");
             }
-        }
-        private void ResetForm()
-        {
-            TenPhong = string.Empty;
-            GhiChu = string.Empty;
-            ChonLoaiPhong = null;
-            ChonTinhTrang = null;
-            DanhSachGhe.Clear();
-            MaPhong = "PC" + DateTime.Now.ToString("ddMMyyHHmm");
-            TinhTongGiaTri();
-        }
-
-        [RelayCommand]
-        private void Thoat(Window p) => p?.Close();
-
-        [RelayCommand]
-        private void TraCuuPhongChieu()
-        {
-            MessageBox.Show("Đang mở chức năng tra cứu...");
-        }
-
-        private void CapNhatLoaiGheKhaDung()
-        {
-            _listLoaiGheKhaDung.Clear();
-            if (ChonLoaiPhong == "Phòng thường")
-            {
-                _listLoaiGheKhaDung.Add("A");
-                _listLoaiGheKhaDung.Add("B");
-                _listLoaiGheKhaDung.Add("C");
-            }
-            else if (ChonLoaiPhong == "Phòng IMAX")
-            {
-                _listLoaiGheKhaDung.Add("D");
-                _listLoaiGheKhaDung.Add("E");
-            }
-        }
-
-        private void TinhTongGiaTri()
-        {
-            decimal tempTong = DanhSachGhe.Sum(x => x.DonGia);
-            TongGiaTri = tempTong;
         }
     }
 }

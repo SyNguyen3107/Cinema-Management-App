@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Cinema_Management_App.Models
 {
-    public partial class Ghe
+    public partial class LoaiGhe
     {
-        public string MaGhe { get; set; } = string.Empty;
-        public string MaSoGhe { get; set; } = string.Empty;
-        public string MaPhong { get; set; } = string.Empty;
         public string MaLoaiGhe { get; set; } = string.Empty;
         public string TenLoaiGhe { get; set; } = string.Empty;
         public decimal DonGia { get; set; }
