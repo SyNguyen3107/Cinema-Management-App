@@ -71,8 +71,6 @@
             <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSachGhe}" AutoGenerateColumns="False" CanUserAddRows="False" 
           LoadingRow="DataGrid_LoadingRow" Background="White" BorderBrush="#DCDFE6" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                   
-
                     <DataGridTemplateColumn Header="MÃ GHẾ" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

@@ -44,30 +44,30 @@ namespace Cinema_Management_App.Repositories
             try
             {
                 string queryInsertPhim = @"
-            INSERT INTO QuanLyPhim.PHIM 
-            (MaPhim, TenPhim, ThoiLuong, MaNhanPhim, MaTheLoai, TenDaoDien, TenDienVienChinh, NgayKhoiChieu) 
-            VALUES 
-            (@MaPhim, @TenPhim, @ThoiLuong, @MaNhanPhim, @MaTheLoai, @TenDaoDien, @TenDienVienChinh, @NgayKhoiChieu);";
+        INSERT INTO QuanLyPhim.PHIM 
+        (MaPhim, TenPhim, ThoiLuong, MaNhanPhim, MaTheLoai, TenDaoDien, TenDienVienChinh, NgayKhoiChieu) 
+        VALUES 
+        (@MaPhim, @TenPhim, @ThoiLuong, @MaNhanPhim, @MaTheLoai, @TenDaoDien, @TenDienVienChinh, @NgayKhoiChieu);";
 
                 MySqlParameter[] parameters = new MySqlParameter[]
                 {
-                    new MySqlParameter("@MaPhim", phimMoi.MaPhim),
-                    new MySqlParameter("@TenPhim", phimMoi.TenPhim),
-                    new MySqlParameter("@ThoiLuong", phimMoi.ThoiLuong),
-                    new MySqlParameter("@MaNhanPhim", phimMoi.MaNhanPhim),
-                    new MySqlParameter("@MaTheLoai", phimMoi.MaTheLoai),
-                    new MySqlParameter("@TenDaoDien", (object)phimMoi.TenDaoDien ?? DBNull.Value),
-                    new MySqlParameter("@TenDienVienChinh", (object)phimMoi.TenDienVienChinh ?? DBNull.Value),
-                    new MySqlParameter("@NgayKhoiChieu", (object)phimMoi.NgayKhoiChieu ?? DBNull.Value)
+            new MySqlParameter("@MaPhim", phimMoi.MaPhim),
+            new MySqlParameter("@TenPhim", phimMoi.TenPhim),
+            new MySqlParameter("@ThoiLuong", phimMoi.ThoiLuong),
+            new MySqlParameter("@MaNhanPhim", phimMoi.MaNhanPhim),
+            new MySqlParameter("@MaTheLoai", phimMoi.MaTheLoai),
+            new MySqlParameter("@TenDaoDien", (object)phimMoi.TenDaoDien ?? DBNull.Value),
+            new MySqlParameter("@TenDienVienChinh", (object)phimMoi.TenDienVienChinh ?? DBNull.Value),
+            new MySqlParameter("@NgayKhoiChieu", (object)phimMoi.NgayKhoiChieu ?? DBNull.Value)
                 };
 
                 int rowsAffected = _dbService.ExecuteNonQuery(queryInsertPhim, parameters);
 
                 return rowsAffected > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                throw new Exception("Lỗi khi thêm phim: " + ex.Message, ex);
             }
         }
         public string GetNewMaPhim()

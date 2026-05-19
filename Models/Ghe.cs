@@ -10,6 +10,12 @@ namespace Cinema_Management_App.Models
         public string MaPhong { get; set; } = string.Empty;
         [ObservableProperty]
         private LoaiGhe _loaiGheDuocChon;
+
         public string MaLoaiGhe => LoaiGheDuocChon?.MaLoaiGhe;
+
+        partial void OnLoaiGheDuocChonChanged(LoaiGhe value)
+        {
+            OnPropertyChanged(nameof(MaLoaiGhe));
+        }
     }
 }

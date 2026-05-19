@@ -8,7 +8,12 @@ namespace Cinema_Management_App.Repositories
 {
     public class PhongChieuRepository
     {
-        private readonly MySQLService _dbService = new MySQLService();
+        private readonly MySQLService _dbService;
+
+        public PhongChieuRepository(MySQLService dbService)
+        {
+            _dbService = dbService;
+        }
         public bool AddPhongChieu(PhongChieu phong, IEnumerable<Ghe> dsGhe)
         {
             using (var conn = _dbService.GetConnection())
@@ -76,7 +81,7 @@ namespace Cinema_Management_App.Repositories
         }
         public string GetMaPhongChieuMoi()
         {
-            return "PC" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            return "PC" + DateTime.Now.ToString("ddMMyyHHmmss");
         }
     }
 }
