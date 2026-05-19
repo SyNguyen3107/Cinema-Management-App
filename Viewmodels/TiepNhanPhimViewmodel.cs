@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows;
 using Application = System.Windows.Application;
@@ -17,7 +18,7 @@ namespace Cinema_Management_App.Viewmodels
         private readonly NhanPhimRepository _nhanPhimRepository;
         private readonly TheLoaiRepository _theLoaiRepository;
 
-        [ObservableProperty] private string _maPhim;
+        [ObservableProperty] private string _maPhim = default!;
         [ObservableProperty] private string _tenPhim;
         [ObservableProperty] private string _tenDaoDien;
         [ObservableProperty] private string _tenDienVienChinh;
@@ -29,8 +30,6 @@ namespace Cinema_Management_App.Viewmodels
         [ObservableProperty] private ObservableCollection<NhanPhim> _danhSachNhanPhim;
         [ObservableProperty] private ObservableCollection<TheLoai> _danhSachTheLoai;
 
-       
-
         public TiepNhanPhimViewmodel(
             PhimRepository phimRepository,
             NhanPhimRepository nhanPhimRepository,
@@ -40,33 +39,42 @@ namespace Cinema_Management_App.Viewmodels
             _nhanPhimRepository = nhanPhimRepository;
             _theLoaiRepository = theLoaiRepository;
 
+            if (_phimRepository != null)
+            {
+                MaPhim = _phimRepository.GetNewMaPhim();
+            }
             LoadDuLieuTuDB();
         }
 
         [RelayCommand]
         private void TiepNhan()
         {
-            if (string.IsNullOrWhiteSpace(TenPhim))
+            if (!KiemTraThongTinPhim())
             {
-                MessageBox.Show("Vui lòng nhập tên phim!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             Phim phimMoi = new Phim
             {
+                MaPhim = MaPhim,
                 TenPhim = this.TenPhim,
                 TenDaoDien = this.TenDaoDien,
                 TenDienVienChinh = this.TenDienVienChinh,
                 ThoiLuong = this.ThoiLuong,
                 NgayKhoiChieu = this.NgayKhoiChieu,
                 MaNhanPhim = NhanPhimDuocChon?.MaNhanPhim ?? 0,
-                MaTheLoai = TheLoaiDuocChon?.MaTheLoai ?? 0
+                MaTheLoai = TheLoaiDuocChon?.MaTheLoai ?? string.Empty
             };
 
-            _phimRepository.AddPhim(phimMoi);
-
-            MessageBox.Show($"Đã thêm phim {TenPhim}", "Thông báo");
-            DatLai();
+            if (_phimRepository.AddPhim(phimMoi))
+            {
+                MessageBox.Show($"Đã tiếp nhận phim '{TenPhim}' thành công vào hệ thống!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                DatLai();
+            }
+            else
+            {
+                MessageBox.Show("Lưu phim thất bại! Hãy kiểm tra lại kết nối CSDL hoặc định dạng dữ liệu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         [RelayCommand]
@@ -75,6 +83,7 @@ namespace Cinema_Management_App.Viewmodels
             MaPhim = string.Empty;
             TenPhim = string.Empty;
             TenDaoDien = string.Empty;
+            TheLoaiDuocChon = null;
             TenDienVienChinh = string.Empty;
             ThoiLuong = 0;
             NgayKhoiChieu = DateTime.Now;
@@ -120,6 +129,40 @@ namespace Cinema_Management_App.Viewmodels
             {
                 MessageBox.Show($"Lỗi khi tải dữ liệu từ CSDL: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        private bool KiemTraThongTinPhim()
+        {
+            if (string.IsNullOrWhiteSpace(TenPhim))
+            {
+                MessageBox.Show("Vui lòng nhập tên phim!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (NhanPhimDuocChon == null)
+            {
+                MessageBox.Show("Vui lòng chọn nhãn phim!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (TheLoaiDuocChon == null)
+            {
+                MessageBox.Show("Vui lòng chọn thể loại!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (ThoiLuong <= 0)
+            {
+                MessageBox.Show("Thời lượng phải lớn hơn 0!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (String.IsNullOrEmpty(TenDaoDien))
+            {
+                MessageBox.Show("Vui lòng nhập tên đạo diễn!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (String.IsNullOrEmpty(TenDienVienChinh))
+            {
+                MessageBox.Show("Vui lòng nhập tên diễn viên chính!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            return true;
         }
     }
 }

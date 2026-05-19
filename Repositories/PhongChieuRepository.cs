@@ -8,8 +8,13 @@ namespace Cinema_Management_App.Repositories
 {
     public class PhongChieuRepository
     {
-        private readonly MySQLService _dbService = new MySQLService();
-        public bool LuuPhongChieu(PhongChieu phong, IEnumerable<Ghe> dsGhe)
+        private readonly MySQLService _dbService;
+
+        public PhongChieuRepository(MySQLService dbService)
+        {
+            _dbService = dbService;
+        }
+        public bool AddPhongChieu(PhongChieu phong, IEnumerable<Ghe> dsGhe)
         {
             using (var conn = _dbService.GetConnection())
             {
@@ -20,52 +25,63 @@ namespace Cinema_Management_App.Repositories
                     {
                         try
                         {
-                            string queryPhong = @"INSERT INTO PHONGCHIEU (TenPhong, MaLoaiPhong, MaTinhTrang, GhiChu, TongGiaTri) 
-                                                VALUES (@ten, @loai, @tt, @gc, @tong); 
-                                                SELECT LAST_INSERT_ID();";
+                            // 1. Thêm thông tin phòng chiếu
+                            string queryPhong = @"INSERT INTO QuanLyPhongChieu.PHONGCHIEU 
+                                        (MaPhong, TenPhong, MaLoaiPhong, MaTinhTrang, GhiChu) 
+                                        VALUES (@mp, @ten, @loai, @tt, @gc);";
 
-                            int newMaPhong;
                             using (MySqlCommand cmdPhong = new MySqlCommand(queryPhong, conn, trans))
                             {
+                                cmdPhong.Parameters.AddWithValue("@mp", phong.MaPhong);
                                 cmdPhong.Parameters.AddWithValue("@ten", phong.TenPhong);
                                 cmdPhong.Parameters.AddWithValue("@loai", phong.MaLoaiPhong);
                                 cmdPhong.Parameters.AddWithValue("@tt", phong.MaTinhTrang);
-                                cmdPhong.Parameters.AddWithValue("@gc", (object)phong.GhiChu ?? DBNull.Value);
-                                cmdPhong.Parameters.AddWithValue("@tong", phong.TongGiaTri);
+                                cmdPhong.Parameters.AddWithValue("@gc", string.IsNullOrWhiteSpace(phong.GhiChu) ? DBNull.Value : phong.GhiChu);
 
-                                newMaPhong = Convert.ToInt32(cmdPhong.ExecuteScalar());
+                                cmdPhong.ExecuteNonQuery();
                             }
-                            string queryGhe = @"INSERT INTO GHE (MaSoGhe, MaPhong, MaLoaiGhe) VALUES (@ms, @mp, @mlg)";
-                            using (MySqlCommand cmdGhe = new MySqlCommand(queryGhe, conn, trans))
+
+                            string queryGhe = @"INSERT INTO QuanLyPhongChieu.GHE 
+                                        (MaGhe, MaSoGhe, MaPhong, MaLoaiGhe) 
+                                        VALUES (@mg, @ms, @mp, @mlg);";
+
+                            using (var cmdGhe = new MySqlCommand(queryGhe, conn, trans))
                             {
+                                cmdGhe.Parameters.Add("@mg", MySqlDbType.VarChar);
                                 cmdGhe.Parameters.Add("@ms", MySqlDbType.VarChar);
-                                cmdGhe.Parameters.Add("@mp", MySqlDbType.Int32);
+                                cmdGhe.Parameters.Add("@mp", MySqlDbType.VarChar);
                                 cmdGhe.Parameters.Add("@mlg", MySqlDbType.VarChar);
+
+                                cmdGhe.Parameters["@mp"].Value = phong.MaPhong;
 
                                 foreach (var ghe in dsGhe)
                                 {
-                                    cmdGhe.Parameters["@ms"].Value = ghe.MaGhe;
-                                    cmdGhe.Parameters["@mp"].Value = newMaPhong;
-                                    cmdGhe.Parameters["@mlg"].Value = ghe.TenLoaiGhe;
+                                    cmdGhe.Parameters["@mg"].Value = ghe.MaGhe;
+                                    cmdGhe.Parameters["@ms"].Value = ghe.MaSoGhe;
+                                    cmdGhe.Parameters["@mlg"].Value = ghe.MaLoaiGhe;
+
                                     cmdGhe.ExecuteNonQuery();
                                 }
                             }
                             trans.Commit();
                             return true;
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             trans.Rollback();
-                            return false;
+                            throw new Exception("Lỗi lưu ghế/phòng: " + ex.Message);
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // Lỗi mở kết nối
-                    return false;
+                    throw new Exception("Lỗi kết nối CSDL: " + ex.Message);
                 }
             }
+        }
+        public string GetMaPhongChieuMoi()
+        {
+            return "PC" + DateTime.Now.ToString("ddMMyyHHmmss");
         }
     }
 }

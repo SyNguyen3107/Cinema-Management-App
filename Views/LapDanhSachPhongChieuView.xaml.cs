@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,12 @@ namespace Cinema_Management_App.Views
         public LapDanhSachPhongChieuView()
         {
             InitializeComponent();
-            this.DataContext = new Viewmodels.LapDanhSachPhongChieuViewmodel();
+            DataContext = App.Current.Services.GetService<Viewmodels.LapDanhSachPhongChieuViewmodel>();
+        }
+
+        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
     }
 }

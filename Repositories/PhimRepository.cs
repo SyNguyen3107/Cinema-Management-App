@@ -17,20 +17,20 @@ namespace Cinema_Management_App.Repositories
         public List<Phim> GetAllPhim()
         {
             List<Phim> danhSachPhim = new List<Phim>();
-            string query = "SELECT * FROM PHIM";
+            string query = "SELECT * FROM QuanLyPhim.PHIM";
             DataTable dt = _dbService.ExecuteQuery(query);
 
             foreach (DataRow row in dt.Rows)
             {
                 Phim phim = new Phim
                 {
-                    MaPhim = Convert.ToInt32(row["MaPhim"]),
-                    TenPhim = row["TenPhim"].ToString(),
+                    MaPhim = row["MaPhim"].ToString() ?? string.Empty,
+                    TenPhim = row["TenPhim"].ToString() ?? string.Empty,
                     ThoiLuong = Convert.ToInt32(row["ThoiLuong"]),
                     MaNhanPhim = Convert.ToInt32(row["MaNhanPhim"]),
-                    MaTheLoai = Convert.ToInt32(row["MaTheLoai"]),
-                    TenDaoDien = row["TenDaoDien"].ToString(),
-                    TenDienVienChinh = row["TenDienVienChinh"].ToString(),
+                    MaTheLoai = row["MaTheLoai"].ToString() ?? string.Empty,
+                    TenDaoDien = row["TenDaoDien"].ToString() ?? string.Empty,
+                    TenDienVienChinh = row["TenDienVienChinh"].ToString() ?? string.Empty,
                     NgayKhoiChieu = Convert.ToDateTime(row["NgayKhoiChieu"])
                 };
 
@@ -44,33 +44,35 @@ namespace Cinema_Management_App.Repositories
             try
             {
                 string queryInsertPhim = @"
-    INSERT INTO PHIM (TenPhim, ThoiLuong, MaNhanPhim, MaTheLoai, TenDaoDien, TenDienVienChinh, NgayKhoiChieu) 
-    VALUES (@TenPhim, @ThoiLuong, @MaNhanPhim, @MaTheLoai, @TenDaoDien, @TenDienVienChinh, @NgayKhoiChieu);
-    SELECT LAST_INSERT_ID();";
+        INSERT INTO QuanLyPhim.PHIM 
+        (MaPhim, TenPhim, ThoiLuong, MaNhanPhim, MaTheLoai, TenDaoDien, TenDienVienChinh, NgayKhoiChieu) 
+        VALUES 
+        (@MaPhim, @TenPhim, @ThoiLuong, @MaNhanPhim, @MaTheLoai, @TenDaoDien, @TenDienVienChinh, @NgayKhoiChieu);";
 
                 MySqlParameter[] parameters = new MySqlParameter[]
                 {
-                    new MySqlParameter("@TenPhim", phimMoi.TenPhim),
-                    new MySqlParameter("@ThoiLuong", phimMoi.ThoiLuong),
-                    new MySqlParameter("@MaNhanPhim", phimMoi.MaNhanPhim),
-                    new MySqlParameter("@MaTheLoai", phimMoi.MaTheLoai),
-                    new MySqlParameter("@TenDaoDien", phimMoi.TenDaoDien),
-                    new MySqlParameter("@TenDienVienChinh", phimMoi.TenDienVienChinh),
-                    new MySqlParameter("@NgayKhoiChieu", phimMoi.NgayKhoiChieu)
+            new MySqlParameter("@MaPhim", phimMoi.MaPhim),
+            new MySqlParameter("@TenPhim", phimMoi.TenPhim),
+            new MySqlParameter("@ThoiLuong", phimMoi.ThoiLuong),
+            new MySqlParameter("@MaNhanPhim", phimMoi.MaNhanPhim),
+            new MySqlParameter("@MaTheLoai", phimMoi.MaTheLoai),
+            new MySqlParameter("@TenDaoDien", (object)phimMoi.TenDaoDien ?? DBNull.Value),
+            new MySqlParameter("@TenDienVienChinh", (object)phimMoi.TenDienVienChinh ?? DBNull.Value),
+            new MySqlParameter("@NgayKhoiChieu", (object)phimMoi.NgayKhoiChieu ?? DBNull.Value)
                 };
 
-                object result = _dbService.ExecuteScalar(queryInsertPhim, parameters);
+                int rowsAffected = _dbService.ExecuteNonQuery(queryInsertPhim, parameters);
 
-                if (result != null)
-                {
-                    int newMaPhim = Convert.ToInt32(result);
-                }
-                return false;
+                return rowsAffected > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                throw new Exception("Lỗi khi thêm phim: " + ex.Message, ex);
             }
+        }
+        public string GetNewMaPhim()
+        {
+            return "P" + DateTime.Now.ToString("yyyyMMddHHmmss");
         }
     }
 }
