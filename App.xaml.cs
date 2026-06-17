@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +26,14 @@ namespace Cinema_Management_App
         {
             var services = new ServiceCollection();
 
-            // Services
-            services.AddSingleton<MySQLService>();
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            services.AddSingleton<IConfiguration>(configuration);
+
+            services.AddSingleton<IDatabaseService, MySQLService>();
 
             // Repositories
             services.AddTransient<PhimRepository>();

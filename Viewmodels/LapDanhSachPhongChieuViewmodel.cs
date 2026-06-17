@@ -153,7 +153,7 @@ namespace Cinema_Management_App.Viewmodels
                     MaPhong = this.MaPhong,
                     TenPhong = this.TenPhong,
                     MaLoaiPhong = LoaiPhongDuocChon.MaLoaiPhong,
-                    MaTinhTrang = ChonTinhTrang.MaTinhTrang,
+                    MaTinhTrang = ChonTinhTrang.MaTinhTrangPhong,
                     GhiChu = this.GhiChu
                 };
                 foreach (var ghe in DanhSachGhe)

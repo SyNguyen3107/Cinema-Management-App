@@ -28,8 +28,8 @@ namespace Cinema_Management_App.Repositories
             {
                 TinhTrangPhong tinhTrangPhong = new TinhTrangPhong
                 {
-                    MaTinhTrang = row["MaTinhTrangPhong"].ToString(),
-                    TenTinhTrang = row["TenTinhTrangPhong"].ToString()
+                    MaTinhTrangPhong = row["MaTinhTrangPhong"].ToString(),
+                    TenTinhTrangPhong = row["TenTinhTrangPhong"].ToString()
                 };
                 tinhTrangPhongs.Add(tinhTrangPhong);
             }
