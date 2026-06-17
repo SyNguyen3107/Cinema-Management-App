@@ -1,39 +1,61 @@
 ﻿using Cinema_Management_App.Models;
 using Cinema_Management_App.Services;
-using MySql.Data.MySqlClient;
+using Cinema_Management_App.Interfaces;
+
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
+using System.Data.Common;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace Cinema_Management_App.Repositories
 {
-    public class TinhTrangPhongRepository
+    public class TinhTrangPhongRepository : ITinhTrangPhongRepository
     {
-        private readonly MySQLService _dbService;
+        private readonly IDatabaseService _dbService;
 
-        public TinhTrangPhongRepository(MySQLService dbService)
+        // Inject the abstract database service to enforce loose coupling
+        public TinhTrangPhongRepository(IDatabaseService dbService)
         {
             _dbService = dbService;
         }
 
-        public List<TinhTrangPhong> GetAllTinhTrangPhong()
+        public async Task<IEnumerable<TinhTrangPhong>> GetAllTinhTrangPhongAsync()
         {
-            List<TinhTrangPhong> tinhTrangPhongs = new List<TinhTrangPhong>();
+            var tinhTrangPhongs = new List<TinhTrangPhong>();
             string query = "SELECT MaTinhTrangPhong, TenTinhTrangPhong FROM QuanLyPhongChieu.TINHTRANGPHONG";
-            DataTable dt = _dbService.ExecuteQuery(query);
+
+            DataTable dt = await _dbService.ExecuteQueryAsync(query);
             foreach (DataRow row in dt.Rows)
             {
-                TinhTrangPhong tinhTrangPhong = new TinhTrangPhong
+                var tinhTrangPhong = new TinhTrangPhong
                 {
-                    MaTinhTrangPhong = row["MaTinhTrangPhong"].ToString(),
-                    TenTinhTrangPhong = row["TenTinhTrangPhong"].ToString()
+                    MaTinhTrangPhong = row["MaTinhTrangPhong"].ToString() ?? string.Empty,
+                    TenTinhTrangPhong = row["TenTinhTrangPhong"].ToString() ?? string.Empty
                 };
                 tinhTrangPhongs.Add(tinhTrangPhong);
             }
             return tinhTrangPhongs;
+        }
+
+        public async Task<TinhTrangPhong?> GetByIdAsync(string maTinhTrangPhong)
+        {
+            string query = "SELECT MaTinhTrangPhong, TenTinhTrangPhong FROM QuanLyPhongChieu.TINHTRANGPHONG WHERE MaTinhTrangPhong = @mtp";
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@mtp", maTinhTrangPhong)
+            };
+
+            DataTable dt = await _dbService.ExecuteQueryAsync(query, parameters);
+            if (dt.Rows.Count == 0) return null;
+
+            DataRow row = dt.Rows[0];
+            return new TinhTrangPhong
+            {
+                MaTinhTrangPhong = row["MaTinhTrangPhong"].ToString() ?? string.Empty,
+                TenTinhTrangPhong = row["TenTinhTrangPhong"].ToString() ?? string.Empty
+            };
         }
     }
 }

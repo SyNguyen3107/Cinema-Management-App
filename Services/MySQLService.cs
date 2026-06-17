@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using System;
+using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Cinema_Management_App.Services
 {
@@ -14,8 +16,23 @@ namespace Cinema_Management_App.Services
         // Inject IConfiguration via constructor (Dependency Injection)
         public MySQLService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AivenMySQL") ??
-                throw new InvalidOperationException("Connection string 'AivenMySQL' not found in configuration.");
+            var configString =
+                ConfigurationManager.ConnectionStrings["AivenMySQL"]
+                ?.ConnectionString;
+
+            if (string.IsNullOrEmpty(configString))
+            {
+                configString = configuration["AIVEN_MYSQL_URL"]
+                               ?? Environment.GetEnvironmentVariable("AivenMySQL");
+            }
+
+            if (string.IsNullOrEmpty(configString))
+            {
+                throw new InvalidOperationException(
+                    "Không tìm thấy chuỗi kết nối 'AivenMySQL'.");
+            }
+
+            _connectionString = configString;
         }
 
         public DbConnection CreateConnection()
@@ -112,7 +129,7 @@ namespace Cinema_Management_App.Services
             }
         }
 
-        public async Task<object> ExecuteScalarAsync(string query, DbParameter[] parameters = null)
+        public async Task<object?> ExecuteScalarAsync(string query, DbParameter[] parameters = null)
         {
             using (MySqlConnection conn = GetConnection())
             {

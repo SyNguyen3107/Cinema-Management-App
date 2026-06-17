@@ -31,7 +31,6 @@ namespace Cinema_Management_App.Repositories
                 {
                     try
                     {
-                        // 1. Insert Room (PhongChieu) information
                         using (var cmdPhong = conn.CreateCommand())
                         {
                             cmdPhong.Transaction = trans;
@@ -48,7 +47,6 @@ namespace Cinema_Management_App.Repositories
                             await cmdPhong.ExecuteNonQueryAsync();
                         }
 
-                        // 2. Insert Seats (Ghe) information linked to the Room
                         using (var cmdGhe = conn.CreateCommand())
                         {
                             cmdGhe.Transaction = trans;

@@ -17,6 +17,6 @@ namespace Cinema_Management_App.Services
         // Asynchronous methods to prevent UI freezing
         Task<DataTable> ExecuteQueryAsync(string query, DbParameter[] parameters = null);
         Task<int> ExecuteNonQueryAsync(string query, DbParameter[] parameters = null);
-        Task<object> ExecuteScalarAsync(string query, DbParameter[] parameters = null);
+        Task<object?> ExecuteScalarAsync(string query, DbParameter[] parameters = null);
     }
 }

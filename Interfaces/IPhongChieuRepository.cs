@@ -19,7 +19,6 @@ namespace Cinema_Management_App.Interfaces
 
         Task<bool> UpdateAsync(PhongChieu phong);
 
-
         Task<bool> DeleteAsync(string maPhong);
 
         Task<bool> ExistsAsync(string maPhong);

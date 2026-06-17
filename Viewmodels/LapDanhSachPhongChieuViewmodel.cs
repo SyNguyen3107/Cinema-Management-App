@@ -1,95 +1,105 @@
 ﻿using Cinema_Management_App.Models;
-using Cinema_Management_App.Repositories;
+using Cinema_Management_App.Interfaces;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Documents;
+using System.Threading.Tasks;
 
 namespace Cinema_Management_App.Viewmodels
 {
     public partial class LapDanhSachPhongChieuViewmodel : ObservableObject
     {
-        private readonly PhongChieuRepository _phongChieuRepo;
-        private readonly LoaiPhongRepository _loaiPhongRepo;
-        private readonly LoaiGheRepository _loaiGheRepo;
-        private readonly TinhTrangPhongRepository _tinhTrangPhongRepo;
+        private readonly IPhongChieuRepository _phongChieuRepo;
+        private readonly ILoaiPhongRepository _loaiPhongRepo;
+        private readonly ILoaiGheRepository _loaiGheRepo;
+        private readonly ITinhTrangPhongRepository _tinhTrangPhongRepo;
+        private readonly IDialogService _dialogService; // Added for MVVM compliant dialogs
+
+        // Action for the View (code-behind) to subscribe to for closing the window
+        public Action? RequestClose;
 
         [ObservableProperty]
-        private ObservableCollection<LoaiPhong> _danhSachLoaiPhong;
+        private ObservableCollection<LoaiPhong> _danhSachLoaiPhong = new();
         [ObservableProperty]
-        private ObservableCollection<TinhTrangPhong> _danhSachTinhTrangPhong;
+        private ObservableCollection<TinhTrangPhong> _danhSachTinhTrangPhong = new();
 
         [ObservableProperty]
-        private LoaiPhong _loaiPhongDuocChon;
+        private LoaiPhong? _loaiPhongDuocChon;
 
         [ObservableProperty]
-        private string _maPhong;
+        private string _maPhong = string.Empty;
 
         [ObservableProperty]
-        private string _tenPhong;
+        private string _tenPhong = string.Empty;
 
         [ObservableProperty]
-        private string _ghiChu;
+        private string _ghiChu = string.Empty;
 
         [ObservableProperty]
-        private TinhTrangPhong _chonTinhTrang;
-
+        private TinhTrangPhong? _chonTinhTrang;
 
         [ObservableProperty]
-        private ObservableCollection<LoaiGhe> _listLoaiGheKhaDung = new ObservableCollection<LoaiGhe>();
+        private ObservableCollection<LoaiGhe> _listLoaiGheKhaDung = new();
 
         [ObservableProperty]
         private ObservableCollection<Ghe> _danhSachGhe = new();
 
         public LapDanhSachPhongChieuViewmodel(
-            PhongChieuRepository phongChieuRepo,
-            LoaiPhongRepository loaiPhongRepo,
-            LoaiGheRepository loaiGheRepo,
-            TinhTrangPhongRepository tinhTrangPhongRepo)
+            IPhongChieuRepository phongChieuRepo,
+            ILoaiPhongRepository loaiPhongRepo,
+            ILoaiGheRepository loaiGheRepo,
+            ITinhTrangPhongRepository tinhTrangPhongRepo,
+            IDialogService dialogService) // Inject the Dialog Service
         {
             _phongChieuRepo = phongChieuRepo;
             _loaiPhongRepo = loaiPhongRepo;
             _loaiGheRepo = loaiGheRepo;
             _tinhTrangPhongRepo = tinhTrangPhongRepo;
+            _dialogService = dialogService;
 
-            Load();
+            _ = LoadAsync();
             if (_phongChieuRepo != null)
             {
-                MaPhong = _phongChieuRepo.GetMaPhongChieuMoi();
+                MaPhong = _phongChieuRepo.GenerateMaPhong();
             }
         }
 
-        private void Load()
+        private async Task LoadAsync()
         {
             try
             {
-                var dsTinhTrang = _tinhTrangPhongRepo.GetAllTinhTrangPhong();
-                var dsLoaiPhong = _loaiPhongRepo.GetAllLoaiPhong();
+                var dsTinhTrang = await _tinhTrangPhongRepo.GetAllTinhTrangPhongAsync();
+                var dsLoaiPhong = await _loaiPhongRepo.GetAllLoaiPhongAsync();
 
                 DanhSachLoaiPhong = new ObservableCollection<LoaiPhong>(dsLoaiPhong);
                 DanhSachTinhTrangPhong = new ObservableCollection<TinhTrangPhong>(dsTinhTrang);
-
             }
             catch
             {
-                MessageBox.Show("Lỗi khi tải dữ liệu từ CSDL. Vui lòng kiểm tra kết nối và thử lại.", "Lỗi");
+                _dialogService.ShowError("Error loading data from the database. Please check your connection and try again.", "Error");
             }
         }
 
-
-        partial void OnLoaiPhongDuocChonChanged(LoaiPhong value)
+        async partial void OnLoaiPhongDuocChonChanged(LoaiPhong? value)
         {
             ListLoaiGheKhaDung.Clear();
             if (value != null)
             {
-                var dsLoaiGhe = _loaiGheRepo.GetAllLoaiGheByMaLoaiPhong(value.MaLoaiPhong);
-                foreach (var lg in dsLoaiGhe)
+                try
                 {
-                    ListLoaiGheKhaDung.Add(lg);
+                    var dsLoaiGhe = await _loaiGheRepo.GetAllLoaiGheByMaLoaiPhongAsync(value.MaLoaiPhong);
+                    foreach (var lg in dsLoaiGhe)
+                    {
+                        ListLoaiGheKhaDung.Add(lg);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _dialogService.ShowError($"Error fetching seat types: {ex.Message}", "Error");
                 }
             }
         }
@@ -104,7 +114,7 @@ namespace Cinema_Management_App.Viewmodels
         }
 
         [RelayCommand]
-        private void XoaGhe(Ghe ghe)
+        private void XoaGhe(Ghe? ghe)
         {
             if (ghe != null)
             {
@@ -123,25 +133,19 @@ namespace Cinema_Management_App.Viewmodels
             ChonTinhTrang = null;
             if (_phongChieuRepo != null)
             {
-                MaPhong = _phongChieuRepo.GetMaPhongChieuMoi(); // Tự động lấy mã phòng chiếu mới từ repository
+                MaPhong = _phongChieuRepo.GenerateMaPhong();
             }
         }
 
         [RelayCommand]
-        private void Thoat(Window window)
+        private void Thoat()
         {
-            if (window != null)
-            {
-                window.Close();
-            }
-            else
-            {
-                Application.Current.Shutdown();
-            }
+            // Trigger the action so the View knows it should close without the ViewModel directly manipulating the UI
+            RequestClose?.Invoke();
         }
 
         [RelayCommand]
-        private void LuuThongTin()
+        private async Task LuuThongTinAsync() // Changed to async Task for RelayCommand
         {
             if (!KiemTraThongTin())
                 return;
@@ -151,51 +155,56 @@ namespace Cinema_Management_App.Viewmodels
                 var newPhong = new PhongChieu
                 {
                     MaPhong = this.MaPhong,
-                    TenPhong = this.TenPhong,
-                    MaLoaiPhong = LoaiPhongDuocChon.MaLoaiPhong,
-                    MaTinhTrang = ChonTinhTrang.MaTinhTrangPhong,
-                    GhiChu = this.GhiChu
+                    TenPhong = this.TenPhong.Trim(),
+                    MaLoaiPhong = LoaiPhongDuocChon!.MaLoaiPhong,
+                    MaTinhTrang = ChonTinhTrang!.MaTinhTrangPhong, // Ensure this matches your TinhTrangPhong model property
+                    GhiChu = this.GhiChu?.Trim() ?? string.Empty
                 };
+
                 foreach (var ghe in DanhSachGhe)
                 {
                     ghe.MaGhe = $"{MaPhong}_{ghe.MaSoGhe}";
                 }
-                if (_phongChieuRepo.AddPhongChieu(newPhong, DanhSachGhe))
+
+                if (await _phongChieuRepo.AddPhongChieuAsync(newPhong, DanhSachGhe))
                 {
-                    MessageBox.Show("Lưu thông tin phòng chiếu thành công!");
+                    _dialogService.ShowMessage("Room information saved successfully!", "Success");
                     PhongChieuMoi();
                 }
                 else
                 {
-                    MessageBox.Show("Lưu thất bại, vui lòng kiểm tra lại CSDL.");
+                    _dialogService.ShowError("Failed to save, please check the database.", "Error");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi lưu thông tin: {ex.Message}");
+                _dialogService.ShowError($"Error saving information: {ex.Message}", "Error");
             }
         }
+
         private bool KiemTraThongTin()
         {
             if (string.IsNullOrEmpty(TenPhong))
             {
-                MessageBox.Show("Vui lòng nhập tên phòng!", "Cảnh báo");
+                _dialogService.ShowWarning("Please enter the room name!", "Warning");
                 return false;
             }
 
             if (LoaiPhongDuocChon == null)
             {
-                MessageBox.Show("Vui lòng chọn loại phòng!", "Cảnh báo");
+                _dialogService.ShowWarning("Please select a room type!", "Warning");
                 return false;
             }
+
             if (ChonTinhTrang == null)
             {
-                MessageBox.Show("Vui lòng chọn tình trạng phòng!", "Cảnh báo");
+                _dialogService.ShowWarning("Please select the room status!", "Warning");
                 return false;
             }
+
             if (DanhSachGhe.Count == 0)
             {
-                MessageBox.Show("Phòng chiếu phải có ít nhất 1 ghế!", "Cảnh báo");
+                _dialogService.ShowWarning("The room must have at least 1 seat!", "Warning");
                 return false;
             }
 
@@ -203,56 +212,39 @@ namespace Cinema_Management_App.Viewmodels
             {
                 if (string.IsNullOrEmpty(ghe.MaSoGhe))
                 {
-                    MessageBox.Show("Nhập đầy đủ số ghế!", "Cảnh báo");
+                    _dialogService.ShowWarning("Please enter all seat numbers completely!", "Warning");
                     return false;
                 }
+
                 if (!Regex.IsMatch(ghe.MaSoGhe, @"^[a-zA-Z0-9]+$"))
                 {
-                    MessageBox.Show(
-                        $"Mã số ghế '{ghe.MaSoGhe}' chứa ký tự không hợp lệ!",
-                        "Cảnh báo"
-                    );
-
+                    _dialogService.ShowWarning($"Seat number '{ghe.MaSoGhe}' contains invalid characters!", "Warning");
                     return false;
                 }
+
                 if (string.IsNullOrEmpty(ghe.MaLoaiGhe))
                 {
-                    MessageBox.Show(
-                        $"Ghế {ghe.MaSoGhe} chưa chọn loại ghế!",
-                        "Cảnh báo"
-                    );
-
+                    _dialogService.ShowWarning($"Seat '{ghe.MaSoGhe}' does not have a selected type!", "Warning");
                     return false;
                 }
 
-                bool hopLe = ListLoaiGheKhaDung
-                    .Any(lg => lg.MaLoaiGhe == ghe.MaLoaiGhe);
+                bool hopLe = ListLoaiGheKhaDung.Any(lg => lg.MaLoaiGhe == ghe.MaLoaiGhe);
 
                 if (!hopLe)
                 {
-                    MessageBox.Show(
-                        $"Ghế {ghe.MaSoGhe} không phù hợp với loại phòng!",
-                        "Cảnh báo"
-                    );
-
+                    _dialogService.ShowWarning($"Seat '{ghe.MaSoGhe}' type is incompatible with the room type!", "Warning");
                     return false;
                 }
-
-                
             }
-            var gheTrung = DanhSachGhe
-    .GroupBy(g => g.MaSoGhe)
-    .FirstOrDefault(g => g.Count() > 1);
+
+            var gheTrung = DanhSachGhe.GroupBy(g => g.MaSoGhe).FirstOrDefault(g => g.Count() > 1);
 
             if (gheTrung != null)
             {
-                MessageBox.Show(
-                    $"Ghế mã số {gheTrung.Key} bị trùng!",
-                    "Cảnh báo"
-                );
-
+                _dialogService.ShowWarning($"Seat number '{gheTrung.Key}' is duplicated!", "Warning");
                 return false;
             }
+
             return true;
         }
     }

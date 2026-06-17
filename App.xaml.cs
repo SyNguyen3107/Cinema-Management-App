@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Cinema_Management_App.Interfaces;
+using Cinema_Management_App.Repositories;
+using Cinema_Management_App.Services;
+using Cinema_Management_App.Viewmodels;
+using Cinema_Management_App.Views;
+using DotNetEnv.Configuration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Cinema_Management_App.Services;
-using Cinema_Management_App.Repositories;
-using Cinema_Management_App.Views;
 using Application = System.Windows.Application;
-using Cinema_Management_App.Viewmodels;
 
 namespace Cinema_Management_App
 {
@@ -26,29 +28,39 @@ namespace Cinema_Management_App
         {
             var services = new ServiceCollection();
 
+            // 1. Nạp cấu hình môi trường (.env)
+            try
+            {
+                DotNetEnv.Env.Load();
+            }
+            catch { }
+
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddDotNetEnv() // Nạp cấu hình từ Environment (.env)
                 .Build();
 
             services.AddSingleton<IConfiguration>(configuration);
-
             services.AddSingleton<IDatabaseService, MySQLService>();
 
-            // Repositories
-            services.AddTransient<PhimRepository>();
-            services.AddTransient<NhanPhimRepository>();
-            services.AddTransient<TheLoaiRepository>();
-            services.AddTransient<PhongChieuRepository>();
-            services.AddTransient<LoaiPhongRepository>();
-            services.AddTransient<LoaiGheRepository>();
-            services.AddTransient<TinhTrangPhongRepository>();
+            // Đăng ký Dialog Service (Chỉ 1 lần duy nhất)
+            services.AddSingleton<IDialogService, WpfDialogService>();
 
-            // ViewModels
+            // 2. Repositories (Đồng loạt sử dụng Transient và Interface)
+            services.AddTransient<IPhimRepository, PhimRepository>();
+            services.AddTransient<INhanPhimRepository, NhanPhimRepository>();
+            services.AddTransient<ITheLoaiRepository, TheLoaiRepository>(); // Đã gộp và sửa thành chuẩn Transient
+            services.AddTransient<IPhongChieuRepository, PhongChieuRepository>();
+            services.AddTransient<ILoaiPhongRepository, LoaiPhongRepository>();
+            services.AddTransient<ILoaiGheRepository, LoaiGheRepository>();
+            services.AddTransient<ITinhTrangPhongRepository, TinhTrangPhongRepository>();
+            services.AddTransient<IGheRepository, GheRepository>();
+
+            // 3. ViewModels
             services.AddTransient<TiepNhanPhimViewmodel>();
             services.AddTransient<LapDanhSachPhongChieuViewmodel>();
 
-            // Views
+            // 4. Views
             services.AddTransient<TiepNhanPhimView>();
             services.AddTransient<CapNhatPhimView>();
             services.AddTransient<XoaPhimView>();
