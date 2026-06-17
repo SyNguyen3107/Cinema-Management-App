@@ -1,54 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 using Cinema_Management_App.Models;
 using Cinema_Management_App.Services;
+using Cinema_Management_App.Interfaces;
 
 namespace Cinema_Management_App.Repositories
 {
-    public class LoaiGheRepository
+    public class LoaiGheRepository : ILoaiGheRepository
     {
-        private readonly MySQLService _dbService;
-        public LoaiGheRepository(MySQLService dbService)
+        private readonly IDatabaseService _dbService;
+
+        // Inject the abstract database service to enforce loose coupling
+        public LoaiGheRepository(IDatabaseService dbService)
         {
             _dbService = dbService;
         }
-        public List<LoaiGhe> GetAllLoaiGhe()
+
+        public async Task<IEnumerable<LoaiGhe>> GetAllLoaiGheAsync()
         {
-            List<LoaiGhe> danhSach = new List<LoaiGhe>();
+            var danhSach = new List<LoaiGhe>();
             string query = "SELECT * FROM QuanLyPhongChieu.LOAIGHE";
-            var dt = _dbService.ExecuteQuery(query);
-            foreach (System.Data.DataRow row in dt.Rows)
+
+            DataTable dt = await _dbService.ExecuteQueryAsync(query);
+            foreach (DataRow row in dt.Rows)
             {
                 danhSach.Add(new LoaiGhe
                 {
-                    MaLoaiGhe = row["MaLoaiGhe"].ToString(),
-                    TenLoaiGhe = row["TenLoaiGhe"].ToString(),
+                    MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty,
+                    TenLoaiGhe = row["TenLoaiGhe"].ToString() ?? string.Empty,
                     DonGia = Convert.ToDecimal(row["DonGia"])
                 });
             }
             return danhSach;
         }
-        public List<LoaiGhe> GetAllLoaiGheByMaLoaiPhong(string maLoaiPhong)
+
+        public async Task<IEnumerable<LoaiGhe>> GetAllLoaiGheByMaLoaiPhongAsync(string maLoaiPhong)
         {
-            List<LoaiGhe> danhSach = new List<LoaiGhe>();
+            var danhSach = new List<LoaiGhe>();
+
+            // Note: Ensure the table name 'QUYDINH_LOAIGHE' matches your actual MySQL schema
             string query = @"SELECT lg.MaLoaiGhe, lg.TenLoaiGhe, lg.DonGia 
                              FROM QuanLyPhongChieu.LOAIGHE lg
                              JOIN QuanLyPhongChieu.QUYDINH_LOAIGHE qdlg ON lg.MaLoaiGhe = qdlg.MaLoaiGhe
                              WHERE qdlg.MaLoaiPhong = @maLoaiPhong";
-            var parameters = new MySql.Data.MySqlClient.MySqlParameter[]
+
+            DbParameter[] parameters = new DbParameter[]
             {
-                new MySql.Data.MySqlClient.MySqlParameter("@maLoaiPhong", maLoaiPhong)
+                new MySqlParameter("@maLoaiPhong", maLoaiPhong)
             };
-            var dt = _dbService.ExecuteQuery(query, parameters);
-            foreach (System.Data.DataRow row in dt.Rows)
+
+            DataTable dt = await _dbService.ExecuteQueryAsync(query, parameters);
+            foreach (DataRow row in dt.Rows)
             {
                 danhSach.Add(new LoaiGhe
                 {
-                    MaLoaiGhe = row["MaLoaiGhe"].ToString(),
-                    TenLoaiGhe = row["TenLoaiGhe"].ToString(),
+                    MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty,
+                    TenLoaiGhe = row["TenLoaiGhe"].ToString() ?? string.Empty,
                     DonGia = Convert.ToDecimal(row["DonGia"])
                 });
             }

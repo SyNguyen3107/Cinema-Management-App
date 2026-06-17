@@ -1,34 +1,59 @@
-﻿using Cinema_Management_App.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 using Cinema_Management_App.Models;
+using Cinema_Management_App.Services;
+using Cinema_Management_App.Interfaces;
 
 namespace Cinema_Management_App.Repositories
 {
-    public class LoaiPhongRepository
+    public class LoaiPhongRepository : ILoaiPhongRepository
     {
-        private readonly MySQLService _dbService;
-        public LoaiPhongRepository(MySQLService dbService)
+        private readonly IDatabaseService _dbService;
+
+        // Inject the abstract database service to ensure loose coupling
+        public LoaiPhongRepository(IDatabaseService dbService)
         {
             _dbService = dbService;
         }
-        public List<LoaiPhong> GetAllLoaiPhong()
+
+        public async Task<IEnumerable<LoaiPhong>> GetAllLoaiPhongAsync()
         {
-            List<LoaiPhong> danhSach = new List<LoaiPhong>();
+            var danhSach = new List<LoaiPhong>();
             string query = "SELECT * FROM QuanLyPhongChieu.LOAIPHONG";
-            var dt = _dbService.ExecuteQuery(query);
-            foreach (System.Data.DataRow row in dt.Rows)
+
+            DataTable dt = await _dbService.ExecuteQueryAsync(query);
+            foreach (DataRow row in dt.Rows)
             {
                 danhSach.Add(new LoaiPhong
                 {
-                    MaLoaiPhong = row["MaLoaiPhong"].ToString(),
-                    TenLoaiPhong = row["TenLoaiPhong"].ToString()
+                    MaLoaiPhong = row["MaLoaiPhong"].ToString() ?? string.Empty,
+                    TenLoaiPhong = row["TenLoaiPhong"].ToString() ?? string.Empty
                 });
             }
             return danhSach;
+        }
+
+        public async Task<LoaiPhong?> GetByIdAsync(string maLoaiPhong)
+        {
+            string query = "SELECT * FROM QuanLyPhongChieu.LOAIPHONG WHERE MaLoaiPhong = @mlp";
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@mlp", maLoaiPhong)
+            };
+
+            DataTable dt = await _dbService.ExecuteQueryAsync(query, parameters);
+            if (dt.Rows.Count == 0) return null;
+
+            DataRow row = dt.Rows[0];
+            return new LoaiPhong
+            {
+                MaLoaiPhong = row["MaLoaiPhong"].ToString() ?? string.Empty,
+                TenLoaiPhong = row["TenLoaiPhong"].ToString() ?? string.Empty
+            };
         }
     }
 }

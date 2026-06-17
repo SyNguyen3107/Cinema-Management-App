@@ -1,32 +1,153 @@
 ﻿using Cinema_Management_App.Models;
 using Cinema_Management_App.Services;
+using Cinema_Management_App.Interfaces;
+using Cinema_Management_App.Extensions;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace Cinema_Management_App.Repositories
 {
-    public class GheRepository
+    public class GheRepository : IGheRepository
     {
-        private readonly MySQLService _dbService;
-        public GheRepository(MySQLService dbService)
+        private readonly IDatabaseService _dbService;
+
+        // Constructor to inject the abstract database service
+        public GheRepository(IDatabaseService dbService)
         {
             _dbService = dbService;
         }
-        public bool AddGhe(Ghe ghe)
+
+        public async Task<bool> AddGheAsync(Ghe ghe, IEnumerable<Ghe> dsGhe)
         {
-            string query = @"INSERT INTO QuanLyPhongChieu.GHE (MaGhe, MaSoGhe, MaPhong, MaLoaiGhe) 
-                             VALUES (@mg, @ms, @mp, @mlg);";
-            var parameters = new MySql.Data.MySqlClient.MySqlParameter[]
+            using (var conn = _dbService.CreateConnection())
             {
-                new MySql.Data.MySqlClient.MySqlParameter("@mg", ghe.MaGhe),
-                new MySql.Data.MySqlClient.MySqlParameter("@ms", ghe.MaSoGhe),
-                new MySql.Data.MySqlClient.MySqlParameter("@mp", ghe.MaPhong),
-                new MySql.Data.MySqlClient.MySqlParameter("@mlg", ghe.MaLoaiGhe)
+                await conn.OpenAsync();
+                using (var trans = await conn.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        using (var cmdGhe = conn.CreateCommand())
+                        {
+                            cmdGhe.Transaction = trans;
+                            cmdGhe.CommandText = @"INSERT INTO QuanLyPhongChieu.GHE
+                                                    (MaGhe, MaSoGhe, MaLoaiGhe, MaPhong) 
+                                                    VALUES (@mg, @msg, @mlg, @mp);";
+
+                            cmdGhe.AddParameterWithValue("@mg", ghe.MaGhe);
+                            cmdGhe.AddParameterWithValue("@msg", ghe.MaSoGhe);
+                            cmdGhe.AddParameterWithValue("@mlg", ghe.MaLoaiGhe);
+                            cmdGhe.AddParameterWithValue("@mp", ghe.MaPhong);
+
+                            await cmdGhe.ExecuteNonQueryAsync();
+                        }
+                        await trans.CommitAsync();
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        await trans.RollbackAsync();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        public async Task<bool> DeleteAsync(string maGhe)
+        {
+            string query = @"DELETE FROM QuanLyPhongChieu.GHE WHERE MaGhe = @mg;";
+            DbParameter[] parameters =
+            {
+                new MySqlParameter("@mg", maGhe)
             };
-            return _dbService.ExecuteNonQuery(query, parameters) > 0;
+
+            // Fixed: Changed from ExecuteScalarAsync to ExecuteNonQueryAsync for DELETE command
+            int result = await _dbService.ExecuteNonQueryAsync(query, parameters);
+            return result > 0;
+        }
+
+        public async Task<bool> ExistsAsync(string maGhe)
+        {
+            string query = @"SELECT COUNT(1) FROM QuanLyPhongChieu.GHE WHERE MaGhe = @mg;";
+            DbParameter[] parameters =
+            {
+                new MySqlParameter("@mg", maGhe)
+            };
+
+            // Fixed: Changed from ExecuteNonQueryAsync to ExecuteScalarAsync to retrieve the COUNT value
+            var result = await _dbService.ExecuteScalarAsync(query, parameters);
+            return Convert.ToInt32(result) > 0;
+        }
+
+        public string GenerateMaGhe()
+        {
+            return "GHE" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+        }
+
+        public async Task<IEnumerable<Ghe>> GetAllAsync()
+        {
+            // Fixed: Added '*' operator to the SELECT statement
+            string query = @"SELECT * FROM QuanLyPhongChieu.GHE";
+            var dt = await _dbService.ExecuteQueryAsync(query);
+
+            var dSGhe = new List<Ghe>();
+            foreach (DataRow row in dt.Rows)
+            {
+                var ghe = new Ghe
+                {
+                    MaGhe = row["MaGhe"].ToString() ?? string.Empty,
+                    MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
+                    MaPhong = row["MaPhong"].ToString() ?? string.Empty,
+                    MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty
+                };
+                dSGhe.Add(ghe);
+            }
+            return dSGhe;
+        }
+
+        public async Task<Ghe?> GetByIdAsync(string maGhe)
+        {
+            string query = "SELECT * FROM QuanLyPhongChieu.GHE WHERE MaGhe = @mg";
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@mg", maGhe)
+            };
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
+
+            if (dt.Rows.Count == 0) return null;
+
+            var row = dt.Rows[0];
+            return new Ghe
+            {
+                MaGhe = row["MaGhe"].ToString() ?? string.Empty,
+                MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
+                MaPhong = row["MaPhong"]?.ToString() ?? string.Empty,
+                MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty
+            };
+        }
+
+        public async Task<bool> UpdateAsync(Ghe ghe)
+        {
+            string query = @"
+                UPDATE QuanLyPhongChieu.GHE
+                SET MaSoGhe = @msg, MaLoaiGhe = @mlg, MaPhong = @mp 
+                WHERE MaGhe = @mg";
+
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@msg", ghe.MaSoGhe),
+                new MySqlParameter("@mlg", ghe.MaLoaiGhe),
+                new MySqlParameter("@mp", ghe.MaPhong),
+                new MySqlParameter("@mg", ghe.MaGhe)
+            };
+
+            int result = await _dbService.ExecuteNonQueryAsync(query, parameters);
+            return result > 0;
         }
     }
 }

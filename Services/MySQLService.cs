@@ -1,42 +1,53 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using Microsoft.Extensions.Configuration;
+using System.Data.Common;
+using System.Threading.Tasks;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Cinema_Management_App.Services
 {
-    public class MySQLService
+    public class MySQLService : IDatabaseService
     {
         private readonly string _connectionString;
 
-        public MySQLService()
+        // Inject IConfiguration via constructor (Dependency Injection)
+        public MySQLService(IConfiguration configuration)
         {
-            // Ưu tiên lấy từ App.config (ConfigurationManager)
-            var connStringFromConfig = System.Configuration.ConfigurationManager.ConnectionStrings["AivenMySQL"]?.ConnectionString;
+            var configString =
+                ConfigurationManager.ConnectionStrings["AivenMySQL"]
+                ?.ConnectionString;
 
-            if (!string.IsNullOrEmpty(connStringFromConfig))
+            if (string.IsNullOrEmpty(configString))
             {
-                _connectionString = connStringFromConfig;
+                configString = configuration["AIVEN_MYSQL_URL"]
+                               ?? Environment.GetEnvironmentVariable("AivenMySQL");
             }
-            else
-            {
-                // Backup: lấy từ appsettings.json
-                var config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                    .Build();
 
-                _connectionString = config.GetConnectionString("AivenMySQL") ??
-                    throw new InvalidOperationException("Connection string 'AivenMySQL' not found.");
+            if (string.IsNullOrEmpty(configString))
+            {
+                throw new InvalidOperationException(
+                    "Không tìm thấy chuỗi kết nối 'AivenMySQL'.");
             }
+
+            _connectionString = configString;
         }
-        public MySqlConnection GetConnection()
+
+        public DbConnection CreateConnection()
         {
             return new MySqlConnection(_connectionString);
         }
 
-        public DataTable ExecuteQuery(string query, MySqlParameter[] parameters = null)
+        private MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(_connectionString);
+        }
+
+        #region Synchronous Methods
+
+        public DataTable ExecuteQuery(string query, DbParameter[] parameters = null)
         {
             using (MySqlConnection conn = GetConnection())
             {
@@ -53,7 +64,7 @@ namespace Cinema_Management_App.Services
             }
         }
 
-        public int ExecuteNonQuery(string query, MySqlParameter[] parameters = null)
+        public int ExecuteNonQuery(string query, DbParameter[] parameters = null)
         {
             using (MySqlConnection conn = GetConnection())
             {
@@ -66,7 +77,7 @@ namespace Cinema_Management_App.Services
             }
         }
 
-        public object ExecuteScalar(string query, MySqlParameter[] parameters = null)
+        public object ExecuteScalar(string query, DbParameter[] parameters = null)
         {
             using (MySqlConnection conn = GetConnection())
             {
@@ -78,5 +89,59 @@ namespace Cinema_Management_App.Services
                 }
             }
         }
+
+        #endregion
+
+        #region Asynchronous Methods
+
+        public async Task<DataTable> ExecuteQueryAsync(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+
+                    await conn.OpenAsync();
+
+                    // MySqlDataAdapter doesn't have an async Fill method.
+                    // Instead, we use ExecuteReaderAsync and load the data into the DataTable.
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        DataTable dt = new DataTable();
+                        dt.Load(reader);
+                        return dt;
+                    }
+                }
+            }
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+                    await conn.OpenAsync();
+                    return await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<object?> ExecuteScalarAsync(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+                    await conn.OpenAsync();
+                    return await cmd.ExecuteScalarAsync();
+                }
+            }
+        }
+
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ namespace Cinema_Management_App.Models
 {
     public partial class TinhTrangPhong
     {
-        public string MaTinhTrang { get; set; } = string.Empty;
-        public string TenTinhTrang { get; set; } = string.Empty;
+        public string MaTinhTrangPhong { get; set; } = string.Empty;
+        public string TenTinhTrangPhong { get; set; } = string.Empty;
     }
 }

@@ -26,15 +26,19 @@ public partial class TiepNhanPhimView : Window
     {
         InitializeComponent();
         this.DataContext = App.Current.Services.GetService<TiepNhanPhimViewmodel>();
+        if (DataContext is Viewmodels.TiepNhanPhimViewmodel vm)
+        {
+            vm.RequestClose += () =>
+            {
+                Application.Current.Dispatcher.Invoke(() => this.Close());
+            };
+        }
     }
-    private void ComboBoxTenTheLoai_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        ComboBoxTenTheLoai.IsDropDownOpen = true;
-    }
-    private void ChuyenDuyetNhapSo(object sender, TextCompositionEventArgs e)
-    {
-        Regex regex = new Regex("[^0-9]+");
-
-        e.Handled = regex.IsMatch(e.Text);
+        if (e.LeftButton == MouseButtonState.Pressed)
+        {
+            this.DragMove();
+        }
     }
 }
