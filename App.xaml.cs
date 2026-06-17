@@ -46,6 +46,7 @@ namespace Cinema_Management_App
             services.AddTransient<CapNhatPhimView>();
             services.AddTransient<XoaPhimView>();
             services.AddTransient<LapDanhSachPhongChieuView>();
+            services.AddTransient<TraCuuPhongChieuView>();
 
             return services.BuildServiceProvider();
         }

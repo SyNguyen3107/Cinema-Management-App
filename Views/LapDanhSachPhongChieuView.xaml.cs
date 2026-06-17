@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace Cinema_Management_App.Views
 {
-    /// <summary>
-    /// Interaction logic for LapDanhSachPhongChieuView.xaml
-    /// </summary>
     public partial class LapDanhSachPhongChieuView : Window
     {
         public LapDanhSachPhongChieuView()
