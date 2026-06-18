@@ -162,6 +162,128 @@ namespace Cinema_Management_App.Repositories
             };
         }
 
+        public async Task<IEnumerable<TraCuuPhongChieuDTO>> TraCuuPhongChieuAsync(
+    string? maPhong, string? tenPhong, string? loaiPhong, string? tinhTrang, string? ghiChu,
+    int? soGheTu, int? soGheDen, decimal? tongTienTu, decimal? tongTienDen)
+        {
+            var danhSach = new List<TraCuuPhongChieuDTO>();
+
+            string query = @"
+        SELECT 
+            P.MaPhong,
+            P.TenPhong,
+            LP.TenLoaiPhong AS LoaiPhong,
+            TT.TenTinhTrangPhong AS TinhTrangPhong,
+            P.GhiChu,
+            COUNT(G.MaGhe) AS SoLuongGhe,
+            COALESCE(SUM(LG.DonGia), 0) AS TongThanhTien
+        FROM QuanLyPhongChieu.PHONGCHIEU P
+        LEFT JOIN QuanLyPhongChieu.LOAIPHONG LP ON P.MaLoaiPhong = LP.MaLoaiPhong
+        LEFT JOIN QuanLyPhongChieu.TINHTRANGPHONG TT ON P.MaTinhTrangPhong = TT.MaTinhTrangPhong
+        LEFT JOIN QuanLyPhongChieu.GHE G ON P.MaPhong = G.MaPhong
+        LEFT JOIN QuanLyPhongChieu.LOAIGHE LG ON G.MaLoaiGhe = LG.MaLoaiGhe
+        WHERE 1=1 ";
+
+            var parameters = new List<MySqlParameter>();
+
+            if (!string.IsNullOrWhiteSpace(maPhong))
+            {
+                query += " AND P.MaPhong LIKE @maPhong ";
+                parameters.Add(new MySqlParameter("@maPhong", $"%{maPhong}%"));
+            }
+            if (!string.IsNullOrWhiteSpace(tenPhong))
+            {
+                query += " AND P.TenPhong LIKE @tenPhong ";
+                parameters.Add(new MySqlParameter("@tenPhong", $"%{tenPhong}%"));
+            }
+            if (!string.IsNullOrEmpty(loaiPhong))
+            {
+                query += " AND LP.TenLoaiPhong LIKE @tenLoaiPhong ";
+                parameters.Add(new MySqlParameter("@tenLoaiPhong", $"%{loaiPhong}%"));
+            }
+            if (!string.IsNullOrEmpty(tinhTrang))
+            {
+                query += " AND TT.TenTinhTrangPhong LIKE @tenTinhTrangPhong ";
+                parameters.Add(new MySqlParameter("@tenTinhTrangPhong", $"%{tinhTrang}%"));
+            }
+            if (!string.IsNullOrEmpty(ghiChu))
+            {
+                query += " AND P.GhiChu LIKE @ghiChu ";
+                parameters.Add(new MySqlParameter("@ghiChu", $"%{ghiChu}%"));
+            }
+
+            query += " GROUP BY P.MaPhong, P.TenPhong, LP.TenLoaiPhong, TT.TenTinhTrangPhong, P.GhiChu ";
+
+            bool hasHaving = false;
+
+            if (soGheTu.HasValue)
+            {
+                query += " HAVING SoLuongGhe >= @soGheTu ";
+                parameters.Add(new MySqlParameter("@soGheTu", soGheTu.Value));
+                hasHaving = true;
+            }
+            if (soGheDen.HasValue)
+            {
+                if (hasHaving)
+                {
+                    query += " AND SoLuongGhe <= @soGheDen ";
+                }
+                else
+                {
+                    query += " HAVING SoLuongGhe <= @soGheDen ";
+                    hasHaving = true;
+                }
+                parameters.Add(new MySqlParameter("@soGheDen", soGheDen.Value));
+            }
+
+            if (tongTienTu.HasValue)
+            {
+                if (hasHaving)
+                {
+                    query += " AND TongThanhTien >= @tongThanhTienTu ";
+                }
+                else
+                {
+                    query += " HAVING TongThanhTien >= @tongThanhTienTu ";
+                    hasHaving = true;
+                }
+                parameters.Add(new MySqlParameter("@tongThanhTienTu", tongTienTu.Value));
+            }
+            if (tongTienDen.HasValue)
+            {
+                if (hasHaving)
+                {
+                    query += " AND TongThanhTien <= @tongThanhTienDen ";
+                }
+                else
+                {
+                    query += " HAVING TongThanhTien <= @tongThanhTienDen ";
+                    hasHaving = true;
+                }
+                parameters.Add(new MySqlParameter("@tongThanhTienDen", tongTienDen.Value));
+            }
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters.ToArray());
+
+            int stt = 1;
+            foreach (DataRow row in dt.Rows)
+            {
+                danhSach.Add(new TraCuuPhongChieuDTO
+                {
+                    STT = stt++,
+                    MaPhong = row["MaPhong"].ToString() ?? "",
+                    TenPhong = row["TenPhong"].ToString() ?? "",
+                    LoaiPhong = row["LoaiPhong"].ToString() ?? "",
+                    TinhTrangPhong = row["TinhTrangPhong"].ToString() ?? "",
+                    SoLuongGhe = Convert.ToInt32(row["SoLuongGhe"]),
+                    TongThanhTien = Convert.ToDecimal(row["TongThanhTien"]),
+                    GhiChu = row["GhiChu"].ToString() ?? ""
+                });
+            }
+
+            return danhSach;
+        }
+
         public async Task<bool> UpdateAsync(PhongChieu phong)
         {
             string query = @"

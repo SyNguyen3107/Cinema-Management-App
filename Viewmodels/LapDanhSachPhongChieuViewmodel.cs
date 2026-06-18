@@ -20,7 +20,6 @@ namespace Cinema_Management_App.Viewmodels
         private readonly ITinhTrangPhongRepository _tinhTrangPhongRepo;
         private readonly IDialogService _dialogService; 
 
-        // Action for the View (code-behind) to subscribe to for closing the window
         public Action? RequestClose;
 
         [ObservableProperty]
@@ -123,7 +122,7 @@ namespace Cinema_Management_App.Viewmodels
         }
 
         [RelayCommand]
-        private async Task PhongChieuMoiAsync() // Đổi thành async Task
+        private async Task PhongChieuMoiAsync()
         {
             DanhSachGhe.Clear();
             LoaiPhongDuocChon = null;
@@ -133,7 +132,6 @@ namespace Cinema_Management_App.Viewmodels
             ChonTinhTrang = null;
             if (_phongChieuRepo != null)
             {
-                // Nhớ đảm bảo hàm GenerateMaPhong của bạn cũng đã chuẩn hóa thành Async
                 _maPhong = await _phongChieuRepo.GenerateMaPhong();
             }
         }
@@ -157,7 +155,7 @@ namespace Cinema_Management_App.Viewmodels
                     MaPhong = this.MaPhong,
                     TenPhong = this.TenPhong.Trim(),
                     MaLoaiPhong = LoaiPhongDuocChon!.MaLoaiPhong,
-                    MaTinhTrang = ChonTinhTrang!.MaTinhTrangPhong, // Ensure this matches your TinhTrangPhong model property
+                    MaTinhTrang = ChonTinhTrang!.MaTinhTrangPhong,
                     GhiChu = this.GhiChu?.Trim() ?? string.Empty
                 };
 
