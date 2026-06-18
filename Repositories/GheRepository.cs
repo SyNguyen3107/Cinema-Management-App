@@ -34,7 +34,7 @@ namespace Cinema_Management_App.Repositories
                         using (var cmdGhe = conn.CreateCommand())
                         {
                             cmdGhe.Transaction = trans;
-                            cmdGhe.CommandText = @"INSERT INTO QuanLyPhongChieu.GHE
+                            cmdGhe.CommandText = @"INSERT INTO QuanLyRapPhim.GHE
                                                     (MaGhe, MaSoGhe, MaLoaiGhe, MaPhong) 
                                                     VALUES (@mg, @msg, @mlg, @mp);";
 
@@ -59,7 +59,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<bool> ExistsAsync(string maGhe)
         {
-            string query = @"SELECT COUNT(1) FROM QuanLyPhongChieu.GHE WHERE MaGhe = @mg;";
+            string query = @"SELECT COUNT(1) FROM QuanLyRapPhim.GHE WHERE MaGhe = @mg;";
             DbParameter[] parameters =
             {
                 new MySqlParameter("@mg", maGhe)
@@ -83,7 +83,7 @@ namespace Cinema_Management_App.Repositories
         public async Task<IEnumerable<Ghe>> GetAllAsync()
         {
             // Fixed: Added '*' operator to the SELECT statement
-            string query = @"SELECT * FROM QuanLyPhongChieu.GHE";
+            string query = @"SELECT * FROM QuanLyRapPhim.GHE";
             var dt = await _dbService.ExecuteQueryAsync(query);
 
             var dSGhe = new List<Ghe>();
@@ -103,7 +103,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<Ghe?> GetByIdAsync(string maGhe)
         {
-            string query = "SELECT * FROM QuanLyPhongChieu.GHE WHERE MaGhe = @mg";
+            string query = "SELECT * FROM QuanLyRapPhim.GHE WHERE MaGhe = @mg";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@mg", maGhe)
@@ -125,7 +125,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<Ghe?> GetByRoomIdAsync(string maPhong)
         {
-            string query = "SELECT * FROM QuanLyPhongChieu.GHE WHERE MaPhong = @mp";
+            string query = "SELECT * FROM QuanLyRapPhim.GHE WHERE MaPhong = @mp";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@mp", maPhong)

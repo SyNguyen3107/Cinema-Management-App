@@ -24,7 +24,7 @@ namespace Cinema_Management_App.Repositories
         public async Task<IEnumerable<TinhTrangPhong>> GetAllTinhTrangPhongAsync()
         {
             var tinhTrangPhongs = new List<TinhTrangPhong>();
-            string query = "SELECT MaTinhTrangPhong, TenTinhTrangPhong FROM QuanLyPhongChieu.TINHTRANGPHONG";
+            string query = "SELECT MaTinhTrangPhong, TenTinhTrangPhong FROM QuanLyRapPhim.TINHTRANGPHONG";
 
             DataTable dt = await _dbService.ExecuteQueryAsync(query);
             foreach (DataRow row in dt.Rows)
@@ -41,7 +41,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<TinhTrangPhong?> GetByIdAsync(string maTinhTrangPhong)
         {
-            string query = "SELECT MaTinhTrangPhong, TenTinhTrangPhong FROM QuanLyPhongChieu.TINHTRANGPHONG WHERE MaTinhTrangPhong = @mtp";
+            string query = "SELECT MaTinhTrangPhong, TenTinhTrangPhong FROM QuanLyRapPhim.TINHTRANGPHONG WHERE MaTinhTrangPhong = @mtp";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@mtp", maTinhTrangPhong)

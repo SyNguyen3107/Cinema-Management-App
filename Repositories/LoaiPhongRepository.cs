@@ -23,7 +23,7 @@ namespace Cinema_Management_App.Repositories
         public async Task<IEnumerable<LoaiPhong>> GetAllLoaiPhongAsync()
         {
             var danhSach = new List<LoaiPhong>();
-            string query = "SELECT * FROM QuanLyPhongChieu.LOAIPHONG";
+            string query = "SELECT * FROM QuanLyRapPhim.LOAIPHONG";
 
             DataTable dt = await _dbService.ExecuteQueryAsync(query);
             foreach (DataRow row in dt.Rows)
@@ -39,7 +39,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<LoaiPhong?> GetByIdAsync(string maLoaiPhong)
         {
-            string query = "SELECT * FROM QuanLyPhongChieu.LOAIPHONG WHERE MaLoaiPhong = @mlp";
+            string query = "SELECT * FROM QuanLyRapPhim.LOAIPHONG WHERE MaLoaiPhong = @mlp";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@mlp", maLoaiPhong)
