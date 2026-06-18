@@ -15,13 +15,12 @@ namespace Cinema_Management_App.Interfaces
 
         Task<IEnumerable<Ghe>> GetAllAsync();
 
-        Task<Ghe?> GetByIdAsync(string maGhe);
-
-        Task<bool> UpdateAsync(Ghe ghe);
-
-        Task<bool> DeleteAsync(string maGhe);
-
         Task<bool> ExistsAsync(string maGhe);
-        string GenerateMaGhe();
+
+        Task<Ghe?> GetByIdAsync(string maGhe);
+        
+        Task<Ghe?> GetByRoomIdAsync(string maPhong);
+
+        Task<string> GenerateMaGhe();
     }
 }

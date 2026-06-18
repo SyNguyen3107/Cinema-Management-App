@@ -65,5 +65,26 @@ namespace Cinema_Management_App.Repositories
             }
             return danhSach;
         }
+
+        public async Task<LoaiGhe?> GetByIdAsync(string maLoaiGhe)
+        {
+            string query = "SELECT * FROM QuanLyPhongChieu.LOAIGHE WHERE MaLoaiGhe = @mlg";
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@mlg", maLoaiGhe)
+            };
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
+
+            if (dt.Rows.Count == 0) return null;
+
+            var row = dt.Rows[0];
+            return new LoaiGhe
+            {
+                MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty,
+                TenLoaiGhe = row["TenLoaiGhe"].ToString() ?? string.Empty,
+                DonGia= Convert.ToDecimal(row["DonGian"])
+            };
+        }
     }
 }

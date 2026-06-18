@@ -16,8 +16,9 @@ namespace Cinema_Management_App.Viewmodels
         private readonly IPhongChieuRepository _phongChieuRepo;
         private readonly ILoaiPhongRepository _loaiPhongRepo;
         private readonly ILoaiGheRepository _loaiGheRepo;
+        private readonly IGheRepository _gheRepo;
         private readonly ITinhTrangPhongRepository _tinhTrangPhongRepo;
-        private readonly IDialogService _dialogService; // Added for MVVM compliant dialogs
+        private readonly IDialogService _dialogService; 
 
         // Action for the View (code-behind) to subscribe to for closing the window
         public Action? RequestClose;
@@ -53,25 +54,24 @@ namespace Cinema_Management_App.Viewmodels
             ILoaiPhongRepository loaiPhongRepo,
             ILoaiGheRepository loaiGheRepo,
             ITinhTrangPhongRepository tinhTrangPhongRepo,
+            IGheRepository gheRepo,
             IDialogService dialogService) // Inject the Dialog Service
         {
             _phongChieuRepo = phongChieuRepo;
             _loaiPhongRepo = loaiPhongRepo;
             _loaiGheRepo = loaiGheRepo;
             _tinhTrangPhongRepo = tinhTrangPhongRepo;
+            _gheRepo = gheRepo;
             _dialogService = dialogService;
 
             _ = LoadAsync();
-            if (_phongChieuRepo != null)
-            {
-                MaPhong = _phongChieuRepo.GenerateMaPhong();
-            }
         }
 
         private async Task LoadAsync()
         {
             try
             {
+                MaPhong = await _phongChieuRepo.GenerateMaPhong();
                 var dsTinhTrang = await _tinhTrangPhongRepo.GetAllTinhTrangPhongAsync();
                 var dsLoaiPhong = await _loaiPhongRepo.GetAllLoaiPhongAsync();
 
@@ -123,7 +123,7 @@ namespace Cinema_Management_App.Viewmodels
         }
 
         [RelayCommand]
-        private void PhongChieuMoi()
+        private async Task PhongChieuMoiAsync() // Đổi thành async Task
         {
             DanhSachGhe.Clear();
             LoaiPhongDuocChon = null;
@@ -133,19 +133,19 @@ namespace Cinema_Management_App.Viewmodels
             ChonTinhTrang = null;
             if (_phongChieuRepo != null)
             {
-                MaPhong = _phongChieuRepo.GenerateMaPhong();
+                // Nhớ đảm bảo hàm GenerateMaPhong của bạn cũng đã chuẩn hóa thành Async
+                _maPhong = await _phongChieuRepo.GenerateMaPhong();
             }
         }
 
         [RelayCommand]
         private void Thoat()
         {
-            // Trigger the action so the View knows it should close without the ViewModel directly manipulating the UI
             RequestClose?.Invoke();
         }
 
         [RelayCommand]
-        private async Task LuuThongTinAsync() // Changed to async Task for RelayCommand
+        private async Task LuuThongTinAsync()
         {
             if (!KiemTraThongTin())
                 return;
@@ -163,13 +163,13 @@ namespace Cinema_Management_App.Viewmodels
 
                 foreach (var ghe in DanhSachGhe)
                 {
-                    ghe.MaGhe = $"{MaPhong}_{ghe.MaSoGhe}";
+                    ghe.MaGhe = await _gheRepo.GenerateMaGhe();
                 }
 
                 if (await _phongChieuRepo.AddPhongChieuAsync(newPhong, DanhSachGhe))
                 {
                     _dialogService.ShowMessage("Room information saved successfully!", "Success");
-                    PhongChieuMoi();
+                    await PhongChieuMoiAsync();
                 }
                 else
                 {

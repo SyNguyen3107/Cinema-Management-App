@@ -57,19 +57,6 @@ namespace Cinema_Management_App.Repositories
             }
         }
 
-        public async Task<bool> DeleteAsync(string maGhe)
-        {
-            string query = @"DELETE FROM QuanLyPhongChieu.GHE WHERE MaGhe = @mg;";
-            DbParameter[] parameters =
-            {
-                new MySqlParameter("@mg", maGhe)
-            };
-
-            // Fixed: Changed from ExecuteScalarAsync to ExecuteNonQueryAsync for DELETE command
-            int result = await _dbService.ExecuteNonQueryAsync(query, parameters);
-            return result > 0;
-        }
-
         public async Task<bool> ExistsAsync(string maGhe)
         {
             string query = @"SELECT COUNT(1) FROM QuanLyPhongChieu.GHE WHERE MaGhe = @mg;";
@@ -77,15 +64,20 @@ namespace Cinema_Management_App.Repositories
             {
                 new MySqlParameter("@mg", maGhe)
             };
-
-            // Fixed: Changed from ExecuteNonQueryAsync to ExecuteScalarAsync to retrieve the COUNT value
             var result = await _dbService.ExecuteScalarAsync(query, parameters);
             return Convert.ToInt32(result) > 0;
         }
 
-        public string GenerateMaGhe()
+        public async Task<string> GenerateMaGhe()
         {
-            return "GHE" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+            string maGhe;
+
+            do
+            {
+                maGhe = "GH" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+            } while (await ExistsAsync(maGhe));
+            
+            return maGhe;
         }
 
         public async Task<IEnumerable<Ghe>> GetAllAsync()
@@ -131,23 +123,26 @@ namespace Cinema_Management_App.Repositories
             };
         }
 
-        public async Task<bool> UpdateAsync(Ghe ghe)
+        public async Task<Ghe?> GetByRoomIdAsync(string maPhong)
         {
-            string query = @"
-                UPDATE QuanLyPhongChieu.GHE
-                SET MaSoGhe = @msg, MaLoaiGhe = @mlg, MaPhong = @mp 
-                WHERE MaGhe = @mg";
-
+            string query = "SELECT * FROM QuanLyPhongChieu.GHE WHERE MaPhong = @mp";
             DbParameter[] parameters = new DbParameter[]
             {
-                new MySqlParameter("@msg", ghe.MaSoGhe),
-                new MySqlParameter("@mlg", ghe.MaLoaiGhe),
-                new MySqlParameter("@mp", ghe.MaPhong),
-                new MySqlParameter("@mg", ghe.MaGhe)
+                new MySqlParameter("@mp", maPhong)
             };
 
-            int result = await _dbService.ExecuteNonQueryAsync(query, parameters);
-            return result > 0;
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
+
+            if (dt.Rows.Count == 0) return null;
+
+            var row = dt.Rows[0];
+            return new Ghe
+            {
+                MaGhe = row["MaGhe"].ToString() ?? string.Empty,
+                MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
+                MaPhong = row["MaPhong"]?.ToString() ?? string.Empty,
+                MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty
+            };
         }
     }
 }

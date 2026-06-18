@@ -22,6 +22,6 @@ namespace Cinema_Management_App.Interfaces
         Task<bool> DeleteAsync(string maPhong);
 
         Task<bool> ExistsAsync(string maPhong);
-        string GenerateMaPhong();
+         Task<string> GenerateMaPhong();
     }
 }
