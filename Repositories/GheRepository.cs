@@ -1,14 +1,15 @@
-﻿using Cinema_Management_App.Models;
-using Cinema_Management_App.Services;
+﻿using Cinema_Management_App.Extensions;
 using Cinema_Management_App.Interfaces;
-using Cinema_Management_App.Extensions;
-
+using Cinema_Management_App.Models;
+using Cinema_Management_App.Services;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 
 namespace Cinema_Management_App.Repositories
 {
@@ -123,6 +124,69 @@ namespace Cinema_Management_App.Repositories
             };
         }
 
+        public async Task<IEnumerable<GheDTO>> GetAvailableByRoomId(string maPhong, string maSuatChieu)
+        {
+            string query = @"SELECT g.MaGhe, g.MaSoGhe, lg.TenLoaiGhe AS LoaiGhe, lg.DonGia 
+                     FROM GHE g 
+                     JOIN LOAIGHE lg ON g.MaLoaiGhe = lg.MaLoaiGhe 
+                     WHERE g.MaPhong = @maPhong AND g.MaGhe NOT IN (
+                         SELECT ct.MaGhe 
+                         FROM CHITIETBANVE ct 
+                         JOIN VE v ON ct.MaVe = v.MaVe 
+                         WHERE v.MaSuatChieu = @maSuatChieu
+                     );";
+
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@maPhong", maPhong),
+                new MySqlParameter("@maSuatChieu", maSuatChieu)
+            };
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
+
+            var danhSachGheTrong = new List<GheDTO>();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                danhSachGheTrong.Add(new GheDTO
+                {
+                    MaGhe = row["MaGhe"].ToString() ?? string.Empty,
+                    MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
+                    LoaiGhe = row["LoaiGhe"].ToString() ?? string.Empty,
+                    DonGia = Convert.ToDecimal(row["DonGia"])
+                });
+            }
+
+            return danhSachGheTrong;
+        }
+        public async Task<IEnumerable<GheDTO>> GetAllGheDTOByRoomIdAsync(string maPhong)
+        {
+            string query = @"SELECT g.MaGhe, g.MaSoGhe, lg.TenLoaiGhe AS LoaiGhe, lg.DonGia 
+                     FROM GHE g 
+                     JOIN LOAIGHE lg ON g.MaLoaiGhe = lg.MaLoaiGhe 
+                     WHERE g.MaPhong = @maPhong;";
+
+            DbParameter[] parameters = new DbParameter[]
+            {
+        new MySqlParameter("@maPhong", maPhong)
+            };
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
+            var danhSachGhe = new List<GheDTO>();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                danhSachGhe.Add(new GheDTO
+                {
+                    MaGhe = row["MaGhe"].ToString() ?? string.Empty,
+                    MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
+                    LoaiGhe = row["LoaiGhe"].ToString() ?? string.Empty,
+                    DonGia = Convert.ToDecimal(row["DonGia"])
+                });
+            }
+
+            return danhSachGhe;
+        }
         public async Task<Ghe?> GetByRoomIdAsync(string maPhong)
         {
             string query = "SELECT * FROM QuanLyRapPhim.GHE WHERE MaPhong = @mp";

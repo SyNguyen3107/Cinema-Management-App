@@ -55,16 +55,19 @@ namespace Cinema_Management_App
             services.AddTransient<IGheRepository, GheRepository>();
             services.AddTransient<ISuatChieuRepository, SuatChieuRepository>();
             services.AddTransient<IThamSoRepository, ThamSoRepository>();
+            services.AddTransient<IVeRepository, VeRepository>();
 
             services.AddTransient<TiepNhanPhimViewmodel>();
             services.AddTransient<LapDanhSachPhongChieuViewmodel>();
             services.AddTransient<TraCuuPhongChieuViewmodel>();
             services.AddTransient<LapSuatChieuViewmodel>();
+            services.AddTransient<BanVeViewmodel>();
 
             services.AddTransient<TiepNhanPhimView>();
             services.AddTransient<LapDanhSachPhongChieuView>();
             services.AddTransient<TraCuuPhongChieuView>();
             services.AddTransient<LapSuatChieuView>();
+            services.AddTransient<BanVeView>();
 
             return services.BuildServiceProvider();
         }
