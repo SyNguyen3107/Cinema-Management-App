@@ -22,5 +22,9 @@ namespace Cinema_Management_App.Interfaces
         Task<Ghe?> GetByRoomIdAsync(string maPhong);
 
         Task<string> GenerateMaGhe();
+
+        Task<IEnumerable<GheDTO>> GetAvailableByRoomId(string maPhong, string maSuatChieu);
+
+        Task<IEnumerable<GheDTO>> GetAllGheDTOByRoomIdAsync(string maPhong);
     }
 }
