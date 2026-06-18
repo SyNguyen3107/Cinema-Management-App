@@ -34,7 +34,7 @@ namespace Cinema_Management_App.Repositories
                         using (var cmdPhong = conn.CreateCommand())
                         {
                             cmdPhong.Transaction = trans;
-                            cmdPhong.CommandText = @"INSERT INTO QuanLyPhongChieu.PHONGCHIEU 
+                            cmdPhong.CommandText = @"INSERT INTO QuanLyRapPhim.PHONGCHIEU 
                                                     (MaPhong, TenPhong, MaLoaiPhong, MaTinhTrangPhong, GhiChu) 
                                                     VALUES (@mp, @ten, @loai, @tt, @gc);";
 
@@ -50,7 +50,7 @@ namespace Cinema_Management_App.Repositories
                         using (var cmdGhe = conn.CreateCommand())
                         {
                             cmdGhe.Transaction = trans;
-                            cmdGhe.CommandText = @"INSERT INTO QuanLyPhongChieu.GHE 
+                            cmdGhe.CommandText = @"INSERT INTO QuanLyRapPhim.GHE 
                                                   (MaGhe, MaSoGhe, MaPhong, MaLoaiGhe) 
                                                   VALUES (@mg, @ms, @mp, @mlg);";
 
@@ -84,8 +84,8 @@ namespace Cinema_Management_App.Repositories
         {
             // Delete associated seats first due to Foreign Key constraints, then delete the room
             string query = @"
-                DELETE FROM QuanLyPhongChieu.GHE WHERE MaPhong = @mp;
-                DELETE FROM QuanLyPhongChieu.PHONGCHIEU WHERE MaPhong = @mp;";
+                DELETE FROM QuanLyRapPhim.GHE WHERE MaPhong = @mp;
+                DELETE FROM QuanLyRapPhim.PHONGCHIEU WHERE MaPhong = @mp;";
 
             DbParameter[] parameters = new DbParameter[]
             {
@@ -98,7 +98,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<bool> ExistsAsync(string maPhong)
         {
-            string query = "SELECT COUNT(1) FROM QuanLyPhongChieu.PHONGCHIEU WHERE MaPhong = @mp";
+            string query = "SELECT COUNT(1) FROM QuanLyRapPhim.PHONGCHIEU WHERE MaPhong = @mp";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@mp", maPhong)
@@ -121,7 +121,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<IEnumerable<PhongChieu>> GetAllAsync()
         {
-            string query = "SELECT * FROM QuanLyPhongChieu.PHONGCHIEU";
+            string query = "SELECT * FROM QuanLyRapPhim.PHONGCHIEU";
             var dt = await _dbService.ExecuteQueryAsync(query);
 
             var dSPhongChieu = new List<PhongChieu>();
@@ -141,7 +141,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<PhongChieu?> GetByIdAsync(string maPhong)
         {
-            string query = "SELECT * FROM QuanLyPhongChieu.PHONGCHIEU WHERE MaPhong = @mp";
+            string query = "SELECT * FROM QuanLyRapPhim.PHONGCHIEU WHERE MaPhong = @mp";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@mp", maPhong)
@@ -177,11 +177,11 @@ namespace Cinema_Management_App.Repositories
             P.GhiChu,
             COUNT(G.MaGhe) AS SoLuongGhe,
             COALESCE(SUM(LG.DonGia), 0) AS TongThanhTien
-        FROM QuanLyPhongChieu.PHONGCHIEU P
-        LEFT JOIN QuanLyPhongChieu.LOAIPHONG LP ON P.MaLoaiPhong = LP.MaLoaiPhong
-        LEFT JOIN QuanLyPhongChieu.TINHTRANGPHONG TT ON P.MaTinhTrangPhong = TT.MaTinhTrangPhong
-        LEFT JOIN QuanLyPhongChieu.GHE G ON P.MaPhong = G.MaPhong
-        LEFT JOIN QuanLyPhongChieu.LOAIGHE LG ON G.MaLoaiGhe = LG.MaLoaiGhe
+        FROM QuanLyRapPhim.PHONGCHIEU P
+        LEFT JOIN QuanLyRapPhim.LOAIPHONG LP ON P.MaLoaiPhong = LP.MaLoaiPhong
+        LEFT JOIN QuanLyRapPhim.TINHTRANGPHONG TT ON P.MaTinhTrangPhong = TT.MaTinhTrangPhong
+        LEFT JOIN QuanLyRapPhim.GHE G ON P.MaPhong = G.MaPhong
+        LEFT JOIN QuanLyRapPhim.LOAIGHE LG ON G.MaLoaiGhe = LG.MaLoaiGhe
         WHERE 1=1 ";
 
             var parameters = new List<MySqlParameter>();
@@ -287,7 +287,7 @@ namespace Cinema_Management_App.Repositories
         public async Task<bool> UpdateAsync(PhongChieu phong)
         {
             string query = @"
-                UPDATE QuanLyPhongChieu.PHONGCHIEU 
+                UPDATE QuanLyRapPhim.PHONGCHIEU 
                 SET TenPhong = @ten, MaLoaiPhong = @loai, MaTinhTrangPhong = @tt, GhiChu = @gc 
                 WHERE MaPhong = @mp";
 

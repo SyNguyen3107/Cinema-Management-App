@@ -23,7 +23,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<IEnumerable<Phim>> GetAllAsync()
         {
-            string query = "SELECT * FROM QuanLyPhim.PHIM";
+            string query = "SELECT * FROM QuanLyRapPhim.PHIM";
             DataTable dt = await _dbService.ExecuteQueryAsync(query);
 
             var danhSachPhim = new List<Phim>();
@@ -47,7 +47,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<Phim?> GetByIdAsync(string maPhim)
         {
-            string query = "SELECT * FROM QuanLyPhim.PHIM WHERE MaPhim = @MaPhim";
+            string query = "SELECT * FROM QuanLyRapPhim.PHIM WHERE MaPhim = @MaPhim";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@MaPhim", maPhim)
@@ -75,7 +75,7 @@ namespace Cinema_Management_App.Repositories
             try
             {
                 string queryInsertPhim = @"
-                    INSERT INTO QuanLyPhim.PHIM 
+                    INSERT INTO QuanLyRapPhim.PHIM 
                     (MaPhim, TenPhim, ThoiLuong, MaNhanPhim, MaTheLoai, TenDaoDien, TenDienVienChinh, NgayKhoiChieu) 
                     VALUES 
                     (@MaPhim, @TenPhim, @ThoiLuong, @MaNhanPhim, @MaTheLoai, @TenDaoDien, @TenDienVienChinh, @NgayKhoiChieu);";
@@ -112,7 +112,7 @@ namespace Cinema_Management_App.Repositories
         public async Task<bool> UpdateAsync(Phim phim)
         {
             string query = @"
-                UPDATE QuanLyPhim.PHIM 
+                UPDATE QuanLyRapPhim.PHIM 
                 SET TenPhim = @TenPhim, ThoiLuong = @ThoiLuong, MaNhanPhim = @MaNhanPhim, 
                     MaTheLoai = @MaTheLoai, TenDaoDien = @TenDaoDien, TenDienVienChinh = @TenDienVienChinh, 
                     NgayKhoiChieu = @NgayKhoiChieu 
@@ -136,7 +136,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<bool> DeleteAsync(string maPhim)
         {
-            string query = "DELETE FROM QuanLyPhim.PHIM WHERE MaPhim = @MaPhim";
+            string query = "DELETE FROM QuanLyRapPhim.PHIM WHERE MaPhim = @MaPhim";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@MaPhim", maPhim)
@@ -148,7 +148,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<bool> ExistsAsync(string maPhim)
         {
-            string query = "SELECT COUNT(1) FROM QuanLyPhim.PHIM WHERE MaPhim = @MaPhim";
+            string query = "SELECT COUNT(1) FROM QuanLyRapPhim.PHIM WHERE MaPhim = @MaPhim";
             DbParameter[] parameters = new DbParameter[]
             {
                 new MySqlParameter("@MaPhim", maPhim)
