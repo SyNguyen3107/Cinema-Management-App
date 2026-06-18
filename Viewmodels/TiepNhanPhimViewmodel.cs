@@ -60,7 +60,8 @@ namespace Cinema_Management_App.Viewmodels
             }
             catch (Exception ex)
             {
-                _dialogService.ShowError($"Database loading error: {ex.Message}", "Error");
+                // Capture and display full exception details for debugging
+                _dialogService.ShowError($"Lỗi tải dữ liệu từ cơ sở dữ liệu. Vui lòng kiểm tra kết nối.\nChi tiết lỗi: {ex.Message}", "Lỗi");
             }
         }
 
@@ -90,17 +91,18 @@ namespace Cinema_Management_App.Viewmodels
 
                 if (success)
                 {
-                    _dialogService.ShowMessage($"Movie '{TenPhim}' has been successfully added!", "Success");
+                    _dialogService.ShowMessage($"Thêm phim '{TenPhim}' thành công!", "Thành công");
                     await DatLaiAsync();
                 }
                 else
                 {
-                    _dialogService.ShowError("Failed to save the movie. Please check your connection.", "Error");
+                    _dialogService.ShowError("Lưu phim thất bại. Vui lòng kiểm tra lại cơ sở dữ liệu.", "Lỗi");
                 }
             }
             catch (Exception ex)
             {
-                _dialogService.ShowError($"An unexpected error occurred: {ex.Message}", "Error");
+                // Display the full stack trace and message for critical save errors
+                _dialogService.ShowError($"Đã xảy ra lỗi không mong muốn khi lưu phim:\n{ex.ToString()}", "Lỗi hệ thống");
             }
         }
 
@@ -122,19 +124,19 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void XoaPhim()
         {
-            _dialogService.ShowMessage("Delete functionality is currently under development.", "Information");
+            _dialogService.ShowMessage("Chức năng Xóa phim đang được phát triển.", "Thông tin");
         }
 
         [RelayCommand]
         private void CapnhatPhim()
         {
-            _dialogService.ShowMessage("Update functionality is currently under development.", "Information");
+            _dialogService.ShowMessage("Chức năng Cập nhật phim đang được phát triển.", "Thông tin");
         }
 
         [RelayCommand]
         private void TimPhim()
         {
-            _dialogService.ShowMessage("Search functionality is currently under development.", "Information");
+            _dialogService.ShowMessage("Chức năng Tìm kiếm phim đang được phát triển.", "Thông tin");
         }
 
         [RelayCommand]
@@ -144,36 +146,37 @@ namespace Cinema_Management_App.Viewmodels
             RequestClose?.Invoke();
         }
 
+        // Validate all user inputs before saving
         private bool KiemTraThongTinPhim()
         {
             if (string.IsNullOrWhiteSpace(TenPhim))
             {
-                _dialogService.ShowWarning("Please enter the movie title!", "Warning");
+                _dialogService.ShowWarning("Vui lòng nhập tên phim!", "Cảnh báo");
                 return false;
             }
             if (NhanPhimDuocChon == null)
             {
-                _dialogService.ShowWarning("Please select a movie label!", "Warning");
+                _dialogService.ShowWarning("Vui lòng chọn nhãn phim!", "Cảnh báo");
                 return false;
             }
             if (TheLoaiDuocChon == null)
             {
-                _dialogService.ShowWarning("Please select a genre!", "Warning");
+                _dialogService.ShowWarning("Vui lòng chọn thể loại phim!", "Cảnh báo");
                 return false;
             }
             if (ThoiLuong <= 0)
             {
-                _dialogService.ShowWarning("Duration must be greater than 0!", "Warning");
+                _dialogService.ShowWarning("Thời lượng phim phải lớn hơn 0!", "Cảnh báo");
                 return false;
             }
             if (string.IsNullOrWhiteSpace(TenDaoDien))
             {
-                _dialogService.ShowWarning("Please enter the director's name!", "Warning");
+                _dialogService.ShowWarning("Vui lòng nhập tên đạo diễn!", "Cảnh báo");
                 return false;
             }
             if (string.IsNullOrWhiteSpace(TenDienVienChinh))
             {
-                _dialogService.ShowWarning("Please enter the main actor's name!", "Warning");
+                _dialogService.ShowWarning("Vui lòng nhập tên diễn viên chính!", "Cảnh báo");
                 return false;
             }
             return true;

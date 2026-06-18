@@ -71,10 +71,10 @@ namespace Cinema_Management_App.Repositories
                         await trans.CommitAsync();
                         return true;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         await trans.RollbackAsync();
-                        throw;
+                        throw new Exception("Error occurred while adding: " + ex.Message, ex);
                     }
                 }
             }

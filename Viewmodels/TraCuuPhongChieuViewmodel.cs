@@ -10,8 +10,6 @@ using Cinema_Management_App.Models;
 using Cinema_Management_App.Interfaces;
 using Cinema_Management_App.Extensions;
 
-
-
 namespace Cinema_Management_App.Viewmodels
 {
     public partial class TraCuuPhongChieuViewmodel : ObservableObject
@@ -20,10 +18,10 @@ namespace Cinema_Management_App.Viewmodels
         private readonly ILoaiPhongRepository _loaiPhongRepo;
         private readonly ITinhTrangPhongRepository _tinhTrangPhongRepo;
         private readonly IDialogService _dialogService;
-        
+
         [ObservableProperty]
         private ObservableCollection<LoaiPhong> _danhSachLoaiPhong = new();
-        
+
         [ObservableProperty]
         private ObservableCollection<TinhTrangPhong> _danhSachTinhTrangPhong = new();
 
@@ -53,10 +51,12 @@ namespace Cinema_Management_App.Viewmodels
         private decimal? _tongTienDen;
 
         [ObservableProperty]
-        private ObservableCollection<TraCuuPhongChieuDTO> _danhSachPhongChieuHopLe= new();
+        private ObservableCollection<TraCuuPhongChieuDTO> _danhSachPhongChieuHopLe = new();
 
+        // An event the View can subscribe to in order to close itself
         public Action? RequestClose;
 
+        // Inject repositories and services via constructor
         public TraCuuPhongChieuViewmodel(IPhongChieuRepository phongChieuRepo,
             ILoaiPhongRepository loaiPhongRepo,
             ITinhTrangPhongRepository tinhTrangPhongRepo,
@@ -67,35 +67,47 @@ namespace Cinema_Management_App.Viewmodels
             _tinhTrangPhongRepo = tinhTrangPhongRepo;
             _dialogService = dialogService;
 
+            // Fire and forget initialization
             _ = LoadAsync();
         }
+
+        // Asynchronously load initial data for dropdowns, including "All" option
         private async Task LoadAsync()
         {
             try
             {
                 var dsTinhTrangDangCo = await _tinhTrangPhongRepo.GetAllTinhTrangPhongAsync();
                 var dsLoaiPhongDangCo = await _loaiPhongRepo.GetAllLoaiPhongAsync();
-                
+
+                // Add dummy "All" item for Room Types
                 var dsLoaiPhong = new List<LoaiPhong> { new LoaiPhong { MaLoaiPhong = "", TenLoaiPhong = "Tất cả" } };
                 dsLoaiPhong.AddRange(dsLoaiPhongDangCo);
                 DanhSachLoaiPhong = new ObservableCollection<LoaiPhong>(dsLoaiPhong);
                 LoaiPhongDuocChon = dsLoaiPhong[0];
 
+                // Add dummy "All" item for Room Statuses
                 var dsTinhTrangPhong = new List<TinhTrangPhong> { new TinhTrangPhong { MaTinhTrangPhong = "", TenTinhTrangPhong = "Tất cả" } };
                 dsTinhTrangPhong.AddRange(dsTinhTrangDangCo);
                 DanhSachTinhTrangPhong = new ObservableCollection<TinhTrangPhong>(dsTinhTrangPhong);
                 TinhTrangDuocChon = dsTinhTrangPhong[0];
+
+                // Optional: Auto-trigger a search on first load to display all data
+                await TraCuuPhongChieuAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                _dialogService.ShowError("Error loading data from the database. Please check your connection and try again.", "Error");
+                // Capture and display full exception details for debugging
+                _dialogService.ShowError($"Lỗi tải dữ liệu từ cơ sở dữ liệu. Vui lòng kiểm tra kết nối.\nChi tiết lỗi: {ex.Message}", "Lỗi");
             }
         }
+
+        // Search for screening rooms based on provided filters
         [RelayCommand]
         private async Task TraCuuPhongChieuAsync()
         {
             try
             {
+                // Map the dummy "All" options to null so the repository ignores these filters
                 string? loaiPhongFilter = (LoaiPhongDuocChon == null || LoaiPhongDuocChon.TenLoaiPhong == "Tất cả") ? null : LoaiPhongDuocChon.TenLoaiPhong;
                 string? tinhTrangFilter = (TinhTrangDuocChon == null || TinhTrangDuocChon.TenTinhTrangPhong == "Tất cả") ? null : TinhTrangDuocChon.TenTinhTrangPhong;
 
@@ -112,9 +124,12 @@ namespace Cinema_Management_App.Viewmodels
             }
             catch (Exception ex)
             {
-                _dialogService.ShowError($"Error occurred: {ex.Message}", "Error");
+                // Display the full stack trace and message for search errors
+                _dialogService.ShowError($"Đã xảy ra lỗi trong quá trình tra cứu:\n{ex.ToString()}", "Lỗi hệ thống");
             }
         }
+
+        // Close the current window
         [RelayCommand]
         private void Thoat()
         {
