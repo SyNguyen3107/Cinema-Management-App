@@ -37,16 +37,14 @@ namespace Cinema_Management_App
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddDotNetEnv() // Nạp cấu hình từ Environment (.env)
+                .AddDotNetEnv()
                 .Build();
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IDatabaseService, MySQLService>();
 
-            // Đăng ký Dialog Service (Chỉ 1 lần duy nhất)
             services.AddSingleton<IDialogService, WpfDialogService>();
 
-            // 2. Repositories (Đồng loạt sử dụng Transient và Interface)
             services.AddTransient<IPhimRepository, PhimRepository>();
             services.AddTransient<INhanPhimRepository, NhanPhimRepository>();
             services.AddTransient<ITheLoaiRepository, TheLoaiRepository>();
@@ -56,11 +54,10 @@ namespace Cinema_Management_App
             services.AddTransient<ITinhTrangPhongRepository, TinhTrangPhongRepository>();
             services.AddTransient<IGheRepository, GheRepository>();
 
-            // 3. ViewModels
             services.AddTransient<TiepNhanPhimViewmodel>();
             services.AddTransient<LapDanhSachPhongChieuViewmodel>();
+            services.AddTransient<TraCuuPhongChieuViewmodel>();
 
-            // 4. Views
             services.AddTransient<TiepNhanPhimView>();
             services.AddTransient<LapDanhSachPhongChieuView>();
             services.AddTransient<TraCuuPhongChieuView>();

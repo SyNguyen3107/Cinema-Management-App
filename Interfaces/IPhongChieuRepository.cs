@@ -22,6 +22,16 @@ namespace Cinema_Management_App.Interfaces
         Task<bool> DeleteAsync(string maPhong);
 
         Task<bool> ExistsAsync(string maPhong);
-         Task<string> GenerateMaPhong();
+        Task<string> GenerateMaPhong();
+        Task<IEnumerable<TraCuuPhongChieuDTO>> TraCuuPhongChieuAsync(
+            string? maPhong,
+            string? tenPhong,
+            string? loaiPhong,
+            string? tinhTrang,
+            string? ghiChu,
+            int? soGheTu,
+            int? soGheDen,
+            decimal? tongTienTu,
+            decimal? tongTienDen);
     }
 }

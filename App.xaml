@@ -1,7 +1,7 @@
 ﻿<Application x:Class="Cinema_Management_App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="Views/LapDanhSachPhongChieuView.xaml">
+             StartupUri="Views/TraCuuPhongChieuView.xaml">
     <Application.Resources>
         <ResourceDictionary>
 
