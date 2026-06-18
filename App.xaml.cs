@@ -49,7 +49,7 @@ namespace Cinema_Management_App
             // 2. Repositories (Đồng loạt sử dụng Transient và Interface)
             services.AddTransient<IPhimRepository, PhimRepository>();
             services.AddTransient<INhanPhimRepository, NhanPhimRepository>();
-            services.AddTransient<ITheLoaiRepository, TheLoaiRepository>(); // Đã gộp và sửa thành chuẩn Transient
+            services.AddTransient<ITheLoaiRepository, TheLoaiRepository>();
             services.AddTransient<IPhongChieuRepository, PhongChieuRepository>();
             services.AddTransient<ILoaiPhongRepository, LoaiPhongRepository>();
             services.AddTransient<ILoaiGheRepository, LoaiGheRepository>();
@@ -62,8 +62,6 @@ namespace Cinema_Management_App
 
             // 4. Views
             services.AddTransient<TiepNhanPhimView>();
-            services.AddTransient<CapNhatPhimView>();
-            services.AddTransient<XoaPhimView>();
             services.AddTransient<LapDanhSachPhongChieuView>();
             services.AddTransient<TraCuuPhongChieuView>();
 

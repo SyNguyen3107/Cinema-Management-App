@@ -21,11 +21,25 @@ namespace Cinema_Management_App.Views
         {
             InitializeComponent();
             DataContext = App.Current.Services.GetService<Viewmodels.LapDanhSachPhongChieuViewmodel>();
+            if (DataContext is Viewmodels.LapDanhSachPhongChieuViewmodel vm)
+            {
+                vm.RequestClose += () =>
+                {
+                    Application.Current.Dispatcher.Invoke(() => this.Close());
+                };
+            }
         }
 
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+        private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.DragMove();
+            }
         }
     }
 }

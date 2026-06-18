@@ -164,14 +164,10 @@ namespace Cinema_Management_App.Repositories
 
             do
             {
-                // 1. Sinh một mã ngẫu nhiên trước
                 maPhim = "PM" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
-
-                // 2. Chờ kết quả kiểm tra dưới Database xem mã này đã tồn tại chưa
             }
-            while (await GetByIdAsync(maPhim) != null); // Nếu kết quả khác null (tức là trùng), lặp lại để tạo mã khác
+            while (await GetByIdAsync(maPhim) != null);
 
-            // Vòng lặp chỉ thoát ra khi tìm được mã chưa tồn tại (kết quả bằng null)
             return maPhim;
         }
     }

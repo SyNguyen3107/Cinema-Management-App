@@ -108,10 +108,15 @@ namespace Cinema_Management_App.Repositories
             return Convert.ToInt32(result) > 0;
         }
 
-        public string GenerateMaPhong()
+        public async Task<string> GenerateMaPhong()
         {
-            // Generate a shortened UUID prefixed with "PC"
-            return "PC" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+            string maPhong;
+            do
+            {
+                maPhong = "PC" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+            } while (await ExistsAsync(maPhong));
+          
+            return maPhong;
         }
 
         public async Task<IEnumerable<PhongChieu>> GetAllAsync()
