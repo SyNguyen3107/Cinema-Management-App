@@ -177,36 +177,6 @@ namespace Cinema_Management_App.Repositories
             throw new NotImplementedException();
         }
 
-        Task<Phim?> IPhimRepository.GetByIdAsync(string maPhim)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IPhimRepository.AddPhimAsync(Phim phimMoi)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IPhimRepository.UpdateAsync(Phim phim)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IPhimRepository.DeleteAsync(string maPhim)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IPhimRepository.ExistsAsync(string maPhim)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<string> IPhimRepository.GenerateMaPhimAsync()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<BaoCaoDoanhThuPhimDTO>> GetMoviesRevenueReportsByMonthYear(int thang, int nam)
         {
             var danhSach = new List<BaoCaoDoanhThuPhimDTO>();
