@@ -28,7 +28,6 @@ namespace Cinema_Management_App
         {
             var services = new ServiceCollection();
 
-            // 1. Nạp cấu hình môi trường (.env)
             try
             {
                 DotNetEnv.Env.Load();
@@ -63,6 +62,7 @@ namespace Cinema_Management_App
             services.AddTransient<LapSuatChieuViewmodel>();
             services.AddTransient<BanVeViewmodel>();
             services.AddTransient<BaoCaoDoanhThuPhimTheoThangViewmodel>();
+            services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongViewmodel>();
 
             services.AddTransient<TiepNhanPhimView>();
             services.AddTransient<LapDanhSachPhongChieuView>();
@@ -70,6 +70,7 @@ namespace Cinema_Management_App
             services.AddTransient<LapSuatChieuView>();
             services.AddTransient<BanVeView>();
             services.AddTransient<BaoCaoDoanhThuPhimTheoThangView>();
+            services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongView>();
 
             return services.BuildServiceProvider();
         }
