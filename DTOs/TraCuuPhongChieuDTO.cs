@@ -1,4 +1,4 @@
-﻿namespace Cinema_Management_App.Models
+﻿namespace Cinema_Management_App.DTOs
 {
     public class TraCuuPhongChieuDTO
     {

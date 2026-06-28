@@ -2,6 +2,7 @@
 using Cinema_Management_App.Services;
 using Cinema_Management_App.Interfaces;
 using Cinema_Management_App.Extensions;
+using Cinema_Management_App.DTOs;
 
 using System;
 using System.Collections.Generic;
