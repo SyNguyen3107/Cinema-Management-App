@@ -2,6 +2,7 @@
 using Cinema_Management_App.Interfaces;
 using Cinema_Management_App.Models;
 using Cinema_Management_App.Services;
+using Cinema_Management_App.DTOs;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Cinema_Management_App.Repositories
 {

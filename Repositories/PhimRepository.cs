@@ -8,6 +8,7 @@ using Cinema_Management_App.Models;
 using Cinema_Management_App.Services;
 using Cinema_Management_App.Interfaces;
 using Cinema_Management_App.Extensions;
+using Cinema_Management_App.DTOs;
 
 namespace Cinema_Management_App.Repositories
 {
@@ -169,6 +170,97 @@ namespace Cinema_Management_App.Repositories
             while (await GetByIdAsync(maPhim) != null);
 
             return maPhim;
+        }
+
+        Task<IEnumerable<Phim>> IPhimRepository.GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Phim?> IPhimRepository.GetByIdAsync(string maPhim)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> IPhimRepository.AddPhimAsync(Phim phimMoi)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> IPhimRepository.UpdateAsync(Phim phim)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> IPhimRepository.DeleteAsync(string maPhim)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> IPhimRepository.ExistsAsync(string maPhim)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IPhimRepository.GenerateMaPhimAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<BaoCaoDoanhThuPhimDTO>> GetMoviesRevenueReportsByMonthYear(int thang, int nam)
+        {
+            var danhSach = new List<BaoCaoDoanhThuPhimDTO>();
+
+            string query = @"
+                            SELECT 
+                                P.TenPhim,
+                                SUM(CTSC.DoanhThuSuatChieu) AS DoanhThu,
+                                AVG(CTSC.TongSoGheDaBan / NULLIF(CTSC.TongSoGhePhong, 0)) AS TyLeLapDayGhe
+                            FROM (
+                                SELECT 
+                                    SC.MaPhim,
+                                    SC.MaSuatChieu,
+                                    SUM(CTVE.TongTien) AS DoanhThuSuatChieu,
+                                    SUM(CTVE.SoGheCuaVe) AS TongSoGheDaBan,
+                                    (SELECT COUNT(G.MaGhe) FROM QuanLyRapPhim.GHE G WHERE G.MaPhong = SC.MaPhong) AS TongSoGhePhong
+                                FROM QuanLyRapPhim.SUATCHIEU SC
+                                JOIN (
+                                    SELECT 
+                                        VE.MaVe, 
+                                        VE.MaSuatChieu, 
+                                        VE.TongTien,
+                                        (SELECT COUNT(CT.MaGhe) FROM QuanLyRapPhim.CHITIETBANVE CT WHERE CT.MaVe = VE.MaVe) AS SoGheCuaVe
+                                    FROM QuanLyRapPhim.VE VE
+                                    WHERE MONTH(VE.NgayBan) = @thang AND YEAR(VE.NgayBan) = @nam
+                                ) AS CTVE ON SC.MaSuatChieu = CTVE.MaSuatChieu
+                                GROUP BY SC.MaPhim, SC.MaSuatChieu, SC.MaPhong
+                            ) AS CTSC
+                            JOIN QuanLyRapPhim.PHIM P ON CTSC.MaPhim = P.MaPhim
+                            GROUP BY CTSC.MaPhim, P.TenPhim
+                            ORDER BY DoanhThu DESC";
+
+            var parameters = new List<MySqlParameter>
+    {
+        new MySqlParameter("@thang", thang),
+        new MySqlParameter("@nam", nam)
+    };
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters.ToArray());
+
+            int stt = 1;
+            foreach (DataRow row in dt.Rows)
+            {
+                danhSach.Add(new BaoCaoDoanhThuPhimDTO
+                {
+                    STT = stt++,
+                    TenPhim = row["TenPhim"].ToString() ?? "",
+                    
+                    DoanhThu = row["DoanhThu"] != DBNull.Value ? Convert.ToDecimal(row["DoanhThu"]) : 0,
+                    TyLeLapDayGhe = row["TyLeLapDayGhe"] != DBNull.Value ? Convert.ToDouble(row["TyLeLapDayGhe"]) : 0
+                });
+            }
+
+            return danhSach;
         }
     }
 }

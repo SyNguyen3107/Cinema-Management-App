@@ -62,12 +62,14 @@ namespace Cinema_Management_App
             services.AddTransient<TraCuuPhongChieuViewmodel>();
             services.AddTransient<LapSuatChieuViewmodel>();
             services.AddTransient<BanVeViewmodel>();
+            services.AddTransient<BaoCaoDoanhThuPhimTheoThangViewmodel>();
 
             services.AddTransient<TiepNhanPhimView>();
             services.AddTransient<LapDanhSachPhongChieuView>();
             services.AddTransient<TraCuuPhongChieuView>();
             services.AddTransient<LapSuatChieuView>();
             services.AddTransient<BanVeView>();
+            services.AddTransient<BaoCaoDoanhThuPhimTheoThangView>();
 
             return services.BuildServiceProvider();
         }

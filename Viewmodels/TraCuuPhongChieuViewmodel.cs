@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Cinema_Management_App.Models;
 using Cinema_Management_App.Interfaces;
 using Cinema_Management_App.Extensions;
+using Cinema_Management_App.DTOs;
 
 namespace Cinema_Management_App.Viewmodels
 {
@@ -67,7 +68,6 @@ namespace Cinema_Management_App.Viewmodels
             _tinhTrangPhongRepo = tinhTrangPhongRepo;
             _dialogService = dialogService;
 
-            // Fire and forget initialization
             _ = LoadAsync();
         }
 

@@ -1,5 +1,6 @@
 ﻿using Cinema_Management_App.Interfaces;
 using Cinema_Management_App.Models;
+using Cinema_Management_App.DTOs;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;

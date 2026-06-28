@@ -1,4 +1,5 @@
 ﻿using Cinema_Management_App.Models;
+using Cinema_Management_App.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
