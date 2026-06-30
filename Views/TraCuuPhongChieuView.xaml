@@ -216,7 +216,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding TenPhong, UpdateSourceTrigger=PropertyChanged}" Margin="5" Height="35" FontSize="14" 
-                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding TenPhong}" HorizontalAlignment="Center"/>
+                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding MaPhong}" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

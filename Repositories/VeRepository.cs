@@ -172,5 +172,26 @@ namespace Cinema_Management_App.Repositories
 
             return danhSachGheDaBan;
         }
+
+        public async Task<decimal> GetTotalSellingbyDayAsync(DateTime date)
+        {
+            string query = @"
+                SELECT SUM(TongTien) 
+                FROM QuanLyRapPhim.VE 
+                WHERE DATE(NgayBan) = @ngayCanTim";
+
+            var parameters = new[]
+            {
+                new MySqlParameter("@ngayCanTim", date.Date)
+            };
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
+
+            if (dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value)
+            {
+                return Convert.ToDecimal(dt.Rows[0][0]);
+            }
+            return 0m;
+        }
     }
 }

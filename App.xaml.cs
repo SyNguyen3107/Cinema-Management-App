@@ -35,9 +35,9 @@ namespace Cinema_Management_App
             catch { }
 
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddDotNetEnv()
-                .Build();
+.SetBasePath(Directory.GetCurrentDirectory())
+.AddDotNetEnv()
+.Build();
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<IDatabaseService, MySQLService>();
@@ -55,6 +55,7 @@ namespace Cinema_Management_App
             services.AddTransient<ISuatChieuRepository, SuatChieuRepository>();
             services.AddTransient<IThamSoRepository, ThamSoRepository>();
             services.AddTransient<IVeRepository, VeRepository>();
+            services.AddSingleton<IWindowService, WindowService>();
 
             services.AddTransient<TiepNhanPhimViewmodel>();
             services.AddTransient<LapDanhSachPhongChieuViewmodel>();
@@ -63,6 +64,8 @@ namespace Cinema_Management_App
             services.AddTransient<BanVeViewmodel>();
             services.AddTransient<BaoCaoDoanhThuPhimTheoThangViewmodel>();
             services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongViewmodel>();
+            services.AddTransient<DashboardViewmodel>();
+            services.AddSingleton<MainViewmodel>();
 
             services.AddTransient<TiepNhanPhimView>();
             services.AddTransient<LapDanhSachPhongChieuView>();
@@ -71,8 +74,38 @@ namespace Cinema_Management_App
             services.AddTransient<BanVeView>();
             services.AddTransient<BaoCaoDoanhThuPhimTheoThangView>();
             services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongView>();
+            services.AddSingleton<MainView>();
 
-            return services.BuildServiceProvider();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var windowService = serviceProvider.GetRequiredService<IWindowService>();
+
+            windowService.Register<TiepNhanPhimViewmodel, TiepNhanPhimView>();
+
+            windowService.Register<LapDanhSachPhongChieuViewmodel, LapDanhSachPhongChieuView>();
+
+            windowService.Register<TraCuuPhongChieuViewmodel, TraCuuPhongChieuView>();
+
+            windowService.Register<LapSuatChieuViewmodel, LapSuatChieuView>();
+
+            windowService.Register<BanVeViewmodel, BanVeView>();
+
+            windowService.Register<BaoCaoDoanhThuPhimTheoThangViewmodel, BaoCaoDoanhThuPhimTheoThangView>();
+
+            windowService.Register<BaoCaoDoanhThuTheoLoaiPhongViewmodel, BaoCaoDoanhThuTheoLoaiPhongView>();
+
+
+            return serviceProvider;
+        }
+        protected override void OnStartup(
+    StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            var mainWindow =
+                Services.GetRequiredService<MainView>();
+
+            mainWindow.Show();
         }
     }
 }
