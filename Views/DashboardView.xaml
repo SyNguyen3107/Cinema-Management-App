@@ -28,7 +28,7 @@
                     <Image Source="/Resources/icon/cinema.png" Width="40" HorizontalAlignment="Left"/>
                     <Button Content="Suất chiếu mới" Background="Transparent" Foreground="Black" 
                 HorizontalAlignment="Left" HorizontalContentAlignment="Left" 
-                BorderThickness="0" Padding="0" FontSize="18" Command="{Binding OpenLapSuatChieuAsyncCommand}" />
+                BorderThickness="0" Padding="0" FontSize="18" Command="{Binding OpenLapSuatChieuCommand}" />
                 </StackPanel>
             </Border>
             <Border Background="White" Width = "260" Height="100" Margin="10" CornerRadius="15">
@@ -36,7 +36,7 @@
                     <Image Source="/Resources/icon/movie-reel.png" Width="40" HorizontalAlignment="Left"/>
                     <Button Content="Thêm phim" Background="Transparent" Foreground="Black" 
     HorizontalAlignment="Left" HorizontalContentAlignment="Left" 
-    BorderThickness="0" Padding="0" FontSize="18"  Command="{Binding OpenTiepNhanPhimAsyncCommand}" />
+    BorderThickness="0" Padding="0" FontSize="18"  Command="{Binding OpenTiepNhanPhimCommand}" />
                 </StackPanel>
             </Border>
         </WrapPanel>

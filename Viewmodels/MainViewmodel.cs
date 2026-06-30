@@ -8,6 +8,7 @@ namespace Cinema_Management_App.Viewmodels
 {
     public partial class MainViewmodel : ObservableObject
     {
+        public Action? RequestClose;
         private readonly IServiceProvider _serviceProvider;
         [ObservableProperty]
         private object _currentViewModel = null!;
@@ -29,6 +30,12 @@ namespace Cinema_Management_App.Viewmodels
                     break;
 
             }
+        }
+
+        [RelayCommand]
+        private void Thoat()
+        {
+            RequestClose?.Invoke();
         }
     }
 }

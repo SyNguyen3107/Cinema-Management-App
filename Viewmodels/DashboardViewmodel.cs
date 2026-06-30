@@ -56,7 +56,7 @@ namespace Cinema_Management_App.Viewmodels
         }
 
         [RelayCommand]
-        private async Task OpenLapSuatChieuAsync()
+        private async Task OpenLapSuatChieu()
         {
             bool? result =
                 _windowService
@@ -68,7 +68,7 @@ namespace Cinema_Management_App.Viewmodels
         }
 
         [RelayCommand]
-        private async Task OpenTiepNhanPhimAsync()
+        private async Task OpenTiepNhanPhim()
         {
             bool? result =
                 _windowService

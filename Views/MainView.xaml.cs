@@ -22,6 +22,13 @@ namespace Cinema_Management_App.Views
         {
             InitializeComponent();
             this.DataContext = App.Current.Services.GetService<MainViewmodel>();
+            if (DataContext is Viewmodels.MainViewmodel vm)
+            {
+                vm.RequestClose += () =>
+                {
+                    Application.Current.Dispatcher.Invoke(() => this.Close());
+                };
+            }
         }
     }
 }

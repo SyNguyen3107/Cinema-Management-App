@@ -22,29 +22,7 @@ namespace Cinema_Management_App.Repositories
             _dbService = dbService;
         }
 
-        public async Task<IEnumerable<Phim>> GetAllAsync()
-        {
-            string query = "SELECT * FROM QuanLyRapPhim.PHIM";
-            DataTable dt = await _dbService.ExecuteQueryAsync(query);
-
-            var danhSachPhim = new List<Phim>();
-            foreach (DataRow row in dt.Rows)
-            {
-                danhSachPhim.Add(new Phim
-                {
-                    MaPhim = row["MaPhim"].ToString() ?? string.Empty,
-                    TenPhim = row["TenPhim"].ToString() ?? string.Empty,
-                    ThoiLuong = Convert.ToInt32(row["ThoiLuong"]),
-                    MaNhanPhim = row["MaNhanPhim"].ToString() ?? string.Empty,
-                    MaTheLoai = row["MaTheLoai"].ToString() ?? string.Empty,
-                    TenDaoDien = row["TenDaoDien"].ToString() ?? string.Empty,
-                    TenDienVienChinh = row["TenDienVienChinh"].ToString() ?? string.Empty,
-                    NgayKhoiChieu = Convert.ToDateTime(row["NgayKhoiChieu"])
-                });
-            }
-
-            return danhSachPhim;
-        }
+        
 
         public async Task<Phim?> GetByIdAsync(string maPhim)
         {
@@ -172,9 +150,28 @@ namespace Cinema_Management_App.Repositories
             return maPhim;
         }
 
-        Task<IEnumerable<Phim>> IPhimRepository.GetAllAsync()
+        public async Task<IEnumerable<Phim>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            string query = "SELECT * FROM QuanLyRapPhim.PHIM";
+            DataTable dt = await _dbService.ExecuteQueryAsync(query);
+
+            var danhSachPhim = new List<Phim>();
+            foreach (DataRow row in dt.Rows)
+            {
+                danhSachPhim.Add(new Phim
+                {
+                    MaPhim = row["MaPhim"].ToString() ?? string.Empty,
+                    TenPhim = row["TenPhim"].ToString() ?? string.Empty,
+                    ThoiLuong = Convert.ToInt32(row["ThoiLuong"]),
+                    MaNhanPhim = row["MaNhanPhim"].ToString() ?? string.Empty,
+                    MaTheLoai = row["MaTheLoai"].ToString() ?? string.Empty,
+                    TenDaoDien = row["TenDaoDien"].ToString() ?? string.Empty,
+                    TenDienVienChinh = row["TenDienVienChinh"].ToString() ?? string.Empty,
+                    NgayKhoiChieu = Convert.ToDateTime(row["NgayKhoiChieu"])
+                });
+            }
+
+            return danhSachPhim;
         }
 
         public async Task<IEnumerable<BaoCaoDoanhThuPhimDTO>> GetMoviesRevenueReportsByMonthYear(int thang, int nam)
