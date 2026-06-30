@@ -13,9 +13,11 @@
   <ItemGroup>
     <None Remove="Resources\icon\cinema.png" />
     <None Remove="Resources\icon\home.png" />
+    <None Remove="Resources\icon\index.png" />
     <None Remove="Resources\icon\money.png" />
     <None Remove="Resources\icon\more.png" />
     <None Remove="Resources\icon\movie-reel.png" />
+    <None Remove="Resources\icon\report.png" />
     <None Remove="Resources\icon\settings.png" />
     <None Remove="Resources\icon\ticket.png" />
   </ItemGroup>
@@ -33,9 +35,11 @@
   <ItemGroup>
     <Resource Include="Resources\icon\cinema.png" />
     <Resource Include="Resources\icon\home.png" />
+    <Resource Include="Resources\icon\index.png" />
     <Resource Include="Resources\icon\money.png" />
     <Resource Include="Resources\icon\more.png" />
     <Resource Include="Resources\icon\movie-reel.png" />
+    <Resource Include="Resources\icon\report.png" />
     <Resource Include="Resources\icon\settings.png" />
     <Resource Include="Resources\icon\ticket.png" />
   </ItemGroup>

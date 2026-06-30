@@ -79,5 +79,53 @@ namespace Cinema_Management_App.Viewmodels
                 await RefreshAsync();
             }
         }
+        [RelayCommand]
+        private async Task OpenTraCuuPhongChieu()
+        {
+            bool? result =
+                _windowService
+                .ShowDialog<TraCuuPhongChieuViewmodel>();
+
+            if (result == true)
+            {
+                await RefreshAsync();
+            }
+        }
+        [RelayCommand]
+        private async Task OpenBaoCaoDoanhThuPhimTheoThang()
+        {
+            bool? result =
+                _windowService
+                .ShowDialog<BaoCaoDoanhThuPhimTheoThangViewmodel>();
+
+            if (result == true)
+            {
+                await RefreshAsync();
+            }
+        }
+        [RelayCommand]
+        private async Task OpenBaoCaoDoanhThuTheoLoaiPhong()
+        {
+            bool? result =
+                _windowService
+                .ShowDialog<BaoCaoDoanhThuTheoLoaiPhongViewmodel>();
+
+            if (result == true)
+            {
+                await RefreshAsync();
+            }
+        }
+        [RelayCommand]
+        private async Task OpenLapDanhSachPhongChieu()
+        {
+            bool? result =
+                _windowService
+                .ShowDialog<LapDanhSachPhongChieuViewmodel>();
+
+            if (result == true)
+            {
+                await RefreshAsync();
+            }
+        }
     }
 }

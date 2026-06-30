@@ -1,5 +1,5 @@
 ﻿using Cinema_Management_App.Interfaces;
-using Cinema_Management_App.Services; // Thêm namespace chứa IDatabaseService nếu cần
+using Cinema_Management_App.Services;
 using MySql.Data.MySqlClient;
 using System;
 using System.Data.Common;
@@ -50,6 +50,35 @@ namespace Cinema_Management_App.Repositories
             }
 
             return Convert.ToDouble(result);
+        }
+        public async Task<bool> CapNhatThamSoDungSaiAsync(string maThamSo, bool giaTri)
+        {
+            string query = "UPDATE THAMSODUNGSAI SET GiaTri = @giaTri WHERE MaThamSo = @ma";
+
+            int giaTriInt = giaTri ? 1 : 0;
+
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@giaTri", giaTriInt),
+                new MySqlParameter("@ma", maThamSo)
+            };
+
+            int rowsAffected = await _dbService.ExecuteNonQueryAsync(query, parameters);
+
+            return rowsAffected > 0;
+        }
+
+        public async Task<bool> CapNhatThamSoGiaTriAsync(string maThamSo, double giaTri)
+        {
+            string query = "UPDATE THAMSOGIATRI SET GiaTri = @giaTri WHERE MaThamSo = @ma";
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@giaTri", giaTri),
+                new MySqlParameter("@ma", maThamSo)
+            };
+
+            int rowsAffected = await _dbService.ExecuteNonQueryAsync(query, parameters);
+            return rowsAffected > 0;
         }
     }
 }

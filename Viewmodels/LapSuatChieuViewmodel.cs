@@ -1,6 +1,7 @@
-﻿using Cinema_Management_App.Interfaces;
+﻿using Cinema_Management_App.DTOs;
+using Cinema_Management_App.Interfaces;
 using Cinema_Management_App.Models;
-using Cinema_Management_App.DTOs;
+using Cinema_Management_App.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -16,6 +17,7 @@ namespace Cinema_Management_App.Viewmodels
         private readonly IPhimRepository _phimRepo;
         private readonly IThamSoRepository _thamSoRepo;
         private readonly IDialogService _dialogService;
+        private readonly IWindowService _windowService;
 
         [ObservableProperty]
         private string _maSuatChieu = string.Empty;
@@ -59,13 +61,15 @@ namespace Cinema_Management_App.Viewmodels
             IPhongChieuRepository phongChieuRepo,
             IPhimRepository phimRepo,
              IThamSoRepository thamSoRepo,
-             IDialogService dialogService)
+             IDialogService dialogService,
+             IWindowService windowService)
         {
             _suatChieuRepo = suatChieuRepo;
             _phongChieuRepo = phongChieuRepo;
             _dialogService = dialogService;
             _phimRepo = phimRepo;
             _thamSoRepo = thamSoRepo;
+            _windowService = windowService;
 
             _ = LoadAsync();
         }
@@ -256,6 +260,15 @@ namespace Cinema_Management_App.Viewmodels
             GioBatDau = null;
             GioKetThuc = null;
         }
+
+        [RelayCommand]
+        private async Task TraCuuPhongChieu()
+        {
+            bool? result =
+                _windowService
+                .ShowDialog<TraCuuPhongChieuViewmodel>();
+        }
+
         [RelayCommand]
         private void Thoat()
         {

@@ -28,7 +28,9 @@ namespace Cinema_Management_App.Viewmodels
                 case PageType.DASHBOARD:
                     CurrentViewModel = _serviceProvider.GetRequiredService<DashboardViewmodel>();
                     break;
-
+                case PageType.SETTINGS:
+                    CurrentViewModel = _serviceProvider.GetRequiredService<SettingViewmodel>();
+                    break;
             }
         }
 

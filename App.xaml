@@ -28,6 +28,13 @@
 
             </DataTemplate>
 
+            <DataTemplate
+    DataType="{x:Type vm:SettingViewmodel}">
+
+                <views:SettingView/>
+
+            </DataTemplate>
+
         </ResourceDictionary>
 
     </Application.Resources>

@@ -225,9 +225,9 @@
                             Background="#F56C6C" Foreground="White" FontWeight="Bold" Height="40" Width="100" FontSize="16" Margin="0,0,15,0" 
                             Command="{Binding ThoatCommand}"/>
 
-                    <Button x:Name="ButtonTimPhong" Content="Tìm phòng chiếu" Style="{StaticResource RoundedButtonStyle}" 
-                            Background="#409EFF" Foreground="White" FontWeight="Bold" Height="40" Width="160" FontSize="16" 
-                            Command="{Binding TimPhongChieuCommand}"/>
+                    <Button x:Name="ButtonTimPhong" Content="Tra cứu phòng chiếu" Style="{StaticResource RoundedButtonStyle}" 
+                            Background="#409EFF" Foreground="White" FontWeight="Bold" Height="40" Width="180" FontSize="16" 
+                            Command="{Binding TraCuuPhongChieuCommand}"/>
                 </StackPanel>
 
                 <Button Grid.Column="1" x:Name="ButtonLapSuat" Content="Lập suất chiếu" Style="{StaticResource RoundedButtonStyle}" 

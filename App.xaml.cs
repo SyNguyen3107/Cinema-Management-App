@@ -65,6 +65,7 @@ namespace Cinema_Management_App
             services.AddTransient<BaoCaoDoanhThuPhimTheoThangViewmodel>();
             services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongViewmodel>();
             services.AddTransient<DashboardViewmodel>();
+            services.AddTransient<SettingViewmodel>();
             services.AddSingleton<MainViewmodel>();
 
             services.AddTransient<TiepNhanPhimView>();
