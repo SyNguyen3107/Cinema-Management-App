@@ -1,21 +1,147 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
+using System;
 using System.Configuration;
-using System.Linq;
-using System.Text;
+using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Cinema_Management_App.Services
 {
-    //Đây là class duy nhất có quyền truy cập vào DB, các class khác muốn truy cập DB phải thông qua class này
-    
-    public class MySQLService
+    public class MySQLService : IDatabaseService
     {
         private readonly string _connectionString;
-        public MySQLService()
+
+        // Inject IConfiguration via constructor (Dependency Injection)
+        public MySQLService(IConfiguration configuration)
         {
-            // Lấy chuỗi kết nối từ App.config thông qua tên "AivenMySQL"
-            _connectionString = ConfigurationManager.ConnectionStrings["AivenMySQL"].ConnectionString;
+            var configString =
+                ConfigurationManager.ConnectionStrings["AivenMySQL"]
+                ?.ConnectionString;
+
+            if (string.IsNullOrEmpty(configString))
+            {
+                configString = configuration["AIVEN_MYSQL_URL"]
+                               ?? Environment.GetEnvironmentVariable("AivenMySQL");
+            }
+
+            if (string.IsNullOrEmpty(configString))
+            {
+                throw new InvalidOperationException(
+                    "Không tìm thấy chuỗi kết nối 'AivenMySQL'.");
+            }
+
+            _connectionString = configString;
         }
+
+        public DbConnection CreateConnection()
+        {
+            return new MySqlConnection(_connectionString);
+        }
+
+        private MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(_connectionString);
+        }
+
+        #region Synchronous Methods
+
+        public DataTable ExecuteQuery(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
+                }
+            }
+        }
+
+        public int ExecuteNonQuery(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+                    conn.Open();
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public object ExecuteScalar(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+                    conn.Open();
+                    return cmd.ExecuteScalar();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Asynchronous Methods
+
+        public async Task<DataTable> ExecuteQueryAsync(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+
+                    await conn.OpenAsync();
+
+                    // MySqlDataAdapter doesn't have an async Fill method.
+                    // Instead, we use ExecuteReaderAsync and load the data into the DataTable.
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        DataTable dt = new DataTable();
+                        dt.Load(reader);
+                        return dt;
+                    }
+                }
+            }
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+                    await conn.OpenAsync();
+                    return await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<object?> ExecuteScalarAsync(string query, DbParameter[] parameters = null)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    if (parameters != null) cmd.Parameters.AddRange(parameters);
+                    await conn.OpenAsync();
+                    return await cmd.ExecuteScalarAsync();
+                }
+            }
+        }
+
+        #endregion
     }
 }

@@ -1,15 +1,20 @@
-﻿using Cinema_Management_App.Services;
+﻿using Cinema_Management_App.Interfaces;
+using Cinema_Management_App.Repositories;
+using Cinema_Management_App.Services;
+using Cinema_Management_App.Viewmodels;
+using Cinema_Management_App.Views;
+using DotNetEnv.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Windows;
-using Cinema_Management_App.Models;
-using Cinema_Management_App.Repositories;
+using Application = System.Windows.Application;
 
-namespace RapPhimManagement
+namespace Cinema_Management_App
 {
     public partial class App : Application
     {
-        // Tạo một bộ cung cấp dịch vụ (Service Provider) toàn cục
         public IServiceProvider Services { get; }
 
         public new static App Current => (App)Application.Current;
@@ -23,17 +28,88 @@ namespace RapPhimManagement
         {
             var services = new ServiceCollection();
 
-            // 1. Đăng ký Services (Dùng AddSingleton: Tạo 1 lần, dùng chung mãi mãi)
-            services.AddSingleton<MySQLService>();
+            try
+            {
+                DotNetEnv.Env.Load();
+            }
+            catch { }
 
-            // 2. Đăng ký Repositories (Dùng AddTransient: Cần lúc nào tạo lúc đó)
-            services.AddTransient<PhimRepository>();
+            var configuration = new ConfigurationBuilder()
+.SetBasePath(Directory.GetCurrentDirectory())
+.AddDotNetEnv()
+.Build();
 
-            // 3. Đăng ký ViewModels
-            //services.AddTransient<ThemPhimViewModel>();
-            //services.AddTransient<MainViewModel>();
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<IDatabaseService, MySQLService>();
 
-            return services.BuildServiceProvider();
+            services.AddSingleton<IDialogService, WpfDialogService>();
+
+            services.AddTransient<IPhimRepository, PhimRepository>();
+            services.AddTransient<INhanPhimRepository, NhanPhimRepository>();
+            services.AddTransient<ITheLoaiRepository, TheLoaiRepository>();
+            services.AddTransient<IPhongChieuRepository, PhongChieuRepository>();
+            services.AddTransient<ILoaiPhongRepository, LoaiPhongRepository>();
+            services.AddTransient<ILoaiGheRepository, LoaiGheRepository>();
+            services.AddTransient<ITinhTrangPhongRepository, TinhTrangPhongRepository>();
+            services.AddTransient<IGheRepository, GheRepository>();
+            services.AddTransient<ISuatChieuRepository, SuatChieuRepository>();
+            services.AddTransient<IThamSoRepository, ThamSoRepository>();
+            services.AddTransient<IVeRepository, VeRepository>();
+            services.AddSingleton<IWindowService, WindowService>();
+
+            services.AddTransient<TiepNhanPhimViewmodel>();
+            services.AddTransient<LapDanhSachPhongChieuViewmodel>();
+            services.AddTransient<TraCuuPhongChieuViewmodel>();
+            services.AddTransient<LapSuatChieuViewmodel>();
+            services.AddTransient<BanVeViewmodel>();
+            services.AddTransient<BaoCaoDoanhThuPhimTheoThangViewmodel>();
+            services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongViewmodel>();
+            services.AddTransient<ChinhSuaPhongChieuViewmodel>();
+            services.AddTransient<DashboardViewmodel>();
+            services.AddTransient<SettingViewmodel>();
+            services.AddSingleton<MainViewmodel>();
+
+            services.AddTransient<TiepNhanPhimView>();
+            services.AddTransient<LapDanhSachPhongChieuView>();
+            services.AddTransient<TraCuuPhongChieuView>();
+            services.AddTransient<LapSuatChieuView>();
+            services.AddTransient<BanVeView>();
+            services.AddTransient<BaoCaoDoanhThuPhimTheoThangView>();
+            services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongView>();
+            services.AddTransient<ChinhSuaPhongChieuView>();
+            services.AddSingleton<MainView>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var windowService = serviceProvider.GetRequiredService<IWindowService>();
+
+            windowService.Register<TiepNhanPhimViewmodel, TiepNhanPhimView>();
+
+            windowService.Register<LapDanhSachPhongChieuViewmodel, LapDanhSachPhongChieuView>();
+
+            windowService.Register<TraCuuPhongChieuViewmodel, TraCuuPhongChieuView>();
+
+            windowService.Register<LapSuatChieuViewmodel, LapSuatChieuView>();
+
+            windowService.Register<BanVeViewmodel, BanVeView>();
+
+            windowService.Register<BaoCaoDoanhThuPhimTheoThangViewmodel, BaoCaoDoanhThuPhimTheoThangView>();
+
+            windowService.Register<BaoCaoDoanhThuTheoLoaiPhongViewmodel, BaoCaoDoanhThuTheoLoaiPhongView>();
+
+            windowService.Register<ChinhSuaPhongChieuViewmodel, ChinhSuaPhongChieuView>();
+
+            return serviceProvider;
+        }
+        protected override void OnStartup(
+    StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            var mainWindow =
+                Services.GetRequiredService<MainView>();
+
+            mainWindow.Show();
         }
     }
 }
