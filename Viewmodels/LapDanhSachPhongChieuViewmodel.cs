@@ -20,7 +20,8 @@ namespace Cinema_Management_App.Viewmodels
         private readonly ITinhTrangPhongRepository _tinhTrangPhongRepo;
         private readonly IDialogService _dialogService;
 
-        public Action? RequestClose;
+        public Action<bool?>? RequestClose;
+        bool daLapPhongChieu = false;
 
         [ObservableProperty]
         private ObservableCollection<LoaiPhong> _danhSachLoaiPhong = new();
@@ -64,11 +65,9 @@ namespace Cinema_Management_App.Viewmodels
             _gheRepo = gheRepo;
             _dialogService = dialogService;
 
-            // Fire and forget initialization
             _ = LoadAsync();
         }
 
-        // Asynchronously load initial data for dropdowns
         private async Task LoadAsync()
         {
             try
@@ -150,7 +149,7 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void Thoat()
         {
-            RequestClose?.Invoke();
+            RequestClose?.Invoke(daLapPhongChieu);
         }
 
         // Save the room and its associated seats to the database
@@ -179,8 +178,10 @@ namespace Cinema_Management_App.Viewmodels
                 }
 
                 // Execute the transaction via repository
-                if (await _phongChieuRepo.AddPhongChieuAsync(newPhong, DanhSachGhe))
+                var success = await _phongChieuRepo.AddPhongChieuAsync(newPhong, DanhSachGhe);
+                if (success)
                 {
+                    daLapPhongChieu = success;
                     _dialogService.ShowMessage("Lưu thông tin phòng chiếu thành công!", "Thành công");
                     await PhongChieuMoiAsync();
                 }

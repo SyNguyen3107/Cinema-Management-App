@@ -62,9 +62,11 @@ namespace Cinema_Management_App.Viewmodels
                 _windowService
                 .ShowDialog<LapSuatChieuViewmodel>();
 
-            
-            await RefreshAsync();
-            
+
+            if (result == true)
+            {
+                await RefreshAsync();
+            }
         }
 
         [RelayCommand]

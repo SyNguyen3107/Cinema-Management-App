@@ -23,9 +23,10 @@ namespace Cinema_Management_App.Views
             DataContext = App.Current.Services.GetService<Viewmodels.LapDanhSachPhongChieuViewmodel>();
             if (DataContext is Viewmodels.LapDanhSachPhongChieuViewmodel vm)
             {
-                vm.RequestClose += () =>
+                vm.RequestClose += result =>
                 {
-                    Application.Current.Dispatcher.Invoke(() => this.Close());
+                    DialogResult = result;
+                    Close();
                 };
             }
         }

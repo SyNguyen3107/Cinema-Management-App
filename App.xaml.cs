@@ -64,6 +64,7 @@ namespace Cinema_Management_App
             services.AddTransient<BanVeViewmodel>();
             services.AddTransient<BaoCaoDoanhThuPhimTheoThangViewmodel>();
             services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongViewmodel>();
+            services.AddTransient<ChinhSuaPhongChieuViewmodel>();
             services.AddTransient<DashboardViewmodel>();
             services.AddTransient<SettingViewmodel>();
             services.AddSingleton<MainViewmodel>();
@@ -75,6 +76,7 @@ namespace Cinema_Management_App
             services.AddTransient<BanVeView>();
             services.AddTransient<BaoCaoDoanhThuPhimTheoThangView>();
             services.AddTransient<BaoCaoDoanhThuTheoLoaiPhongView>();
+            services.AddTransient<ChinhSuaPhongChieuView>();
             services.AddSingleton<MainView>();
 
             var serviceProvider = services.BuildServiceProvider();
@@ -95,6 +97,7 @@ namespace Cinema_Management_App
 
             windowService.Register<BaoCaoDoanhThuTheoLoaiPhongViewmodel, BaoCaoDoanhThuTheoLoaiPhongView>();
 
+            windowService.Register<ChinhSuaPhongChieuViewmodel, ChinhSuaPhongChieuView>();
 
             return serviceProvider;
         }

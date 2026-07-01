@@ -28,9 +28,10 @@ public partial class TraCuuPhongChieuView : Window
         this.DataContext = App.Current.Services.GetService<TraCuuPhongChieuViewmodel>();
         if (DataContext is Viewmodels.TraCuuPhongChieuViewmodel vm)
         {
-            vm.RequestClose += () =>
+            vm.RequestClose += result =>
             {
-                Application.Current.Dispatcher.Invoke(() => this.Close());
+                DialogResult = result;
+                Close();
             };
         }
     }

@@ -18,7 +18,11 @@ namespace Cinema_Management_App.Interfaces
 
         Task<PhongChieu?> GetByIdAsync(string maPhong);
 
+        Task<TraCuuPhongChieuDTO> GetPhongChieuDTOByIdAsync(string maPhong);
+
         Task<bool> UpdateAsync(PhongChieu phong);
+
+        Task<bool> UpdateWithChairListAsync(PhongChieu phong, IEnumerable<GheDTO> dsGhe);
 
         Task<bool> DeleteAsync(string maPhong);
 

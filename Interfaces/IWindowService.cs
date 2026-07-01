@@ -12,7 +12,8 @@ namespace Cinema_Management_App.Interfaces
         void Register<TViewModel, TView>()
         where TView : Window;
 
-        bool? ShowDialog<TViewModel>()
-        where TViewModel : class;
+        bool? ShowDialog<TViewModel>() where TViewModel : class;
+
+        bool? ShowDialog<TViewModel>(Action<TViewModel> configureViewModel) where TViewModel : class;
     }
 }

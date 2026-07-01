@@ -55,8 +55,9 @@ namespace Cinema_Management_App.Viewmodels
         [ObservableProperty]
         private DateTime? _gioKetThuc;
 
-        public Action? RequestClose;
+        public Action<bool?>? RequestClose;
 
+        private bool daLapSuatChieu = false;
         public LapSuatChieuViewmodel(ISuatChieuRepository suatChieuRepo,
             IPhongChieuRepository phongChieuRepo,
             IPhimRepository phimRepo,
@@ -231,9 +232,10 @@ namespace Cinema_Management_App.Viewmodels
                     MaPhong = this.PhongDuocChon!.MaPhong
                 };
                 bool ketQua = await _suatChieuRepo.AddSuatChieuAsync(suatChieuMoi);
-
+                daLapSuatChieu = ketQua;
                 if (ketQua)
                 {
+                    
                     _dialogService.ShowMessage("Lập suất chiếu phim thành công!", "Thành công");
 
                     MaSuatChieu = await _suatChieuRepo.GenerateMaSuatChieu();
@@ -272,7 +274,7 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void Thoat()
         {
-            RequestClose?.Invoke();
+            RequestClose?.Invoke(daLapSuatChieu);
         }
     }
 }

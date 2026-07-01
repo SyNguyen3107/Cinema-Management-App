@@ -44,7 +44,9 @@ namespace Cinema_Management_App.Viewmodels
         private readonly IDialogService _dialogService;
         private readonly IWindowService _windowService;
 
-        public Action? RequestClose;
+        public Action<bool?>? RequestClose;
+
+        private bool daBanVeThanhCong = false;
 
         [ObservableProperty] private ObservableCollection<SuatChieu> _danhSachSuatChieu = new();
         [ObservableProperty] private ObservableCollection<GheDTO> _danhSachGheTrong = new();
@@ -228,6 +230,7 @@ namespace Cinema_Management_App.Viewmodels
 
                 if (success)
                 {
+                    daBanVeThanhCong = true;
                     _dialogService.ShowMessage("Bán vé thành công!", "Thành công");
                     await ResetFormAsync(); // Reset after successful sale
                 }
@@ -315,7 +318,7 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void Thoat()
         {
-            RequestClose?.Invoke();
+            RequestClose?.Invoke(daBanVeThanhCong);
         }
     }
 }

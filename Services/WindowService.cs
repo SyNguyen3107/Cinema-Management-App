@@ -49,5 +49,28 @@ namespace Cinema_Management_App.Services
 
             return window.ShowDialog();
         }
+        public bool? ShowDialog<TViewModel>(Action<TViewModel> configureViewModel)
+    where TViewModel : class
+        {
+            var vmType = typeof(TViewModel);
+
+            if (!_mappings.TryGetValue(vmType, out var viewType))
+            {
+                throw new InvalidOperationException($"Chưa đăng ký View cho {vmType.Name}");
+            }
+
+            var window = (Window)_serviceProvider.GetRequiredService(viewType);
+
+            if (window.DataContext is not TViewModel viewModel)
+            {
+                viewModel = _serviceProvider.GetRequiredService<TViewModel>();
+                window.DataContext = viewModel;
+            }
+
+            configureViewModel?.Invoke(viewModel);
+
+            window.Owner = Application.Current.MainWindow;
+            return window.ShowDialog();
+        }
     }
 }

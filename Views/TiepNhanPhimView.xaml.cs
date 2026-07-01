@@ -28,9 +28,10 @@ public partial class TiepNhanPhimView : Window
         this.DataContext = App.Current.Services.GetService<TiepNhanPhimViewmodel>();
         if (DataContext is Viewmodels.TiepNhanPhimViewmodel vm)
         {
-            vm.RequestClose += () =>
+            vm.RequestClose += result =>
             {
-                Application.Current.Dispatcher.Invoke(() => this.Close());
+                DialogResult = result;
+                Close();
             };
         }
     }

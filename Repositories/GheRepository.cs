@@ -128,7 +128,7 @@ namespace Cinema_Management_App.Repositories
 
         public async Task<IEnumerable<GheDTO>> GetAvailableByRoomId(string maPhong, string maSuatChieu)
         {
-            string query = @"SELECT g.MaGhe, g.MaSoGhe, lg.TenLoaiGhe AS LoaiGhe, lg.DonGia 
+            string query = @"SELECT g.MaGhe, g.MaSoGhe, lg.TenLoaiGhe AS TenLoaiGhe, lg.DonGia 
                      FROM GHE g 
                      JOIN LOAIGHE lg ON g.MaLoaiGhe = lg.MaLoaiGhe 
                      WHERE g.MaPhong = @maPhong AND g.MaGhe NOT IN (
@@ -154,7 +154,7 @@ namespace Cinema_Management_App.Repositories
                 {
                     MaGhe = row["MaGhe"].ToString() ?? string.Empty,
                     MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
-                    LoaiGhe = row["LoaiGhe"].ToString() ?? string.Empty,
+                    TenLoaiGhe = row["TenLoaiGhe"].ToString() ?? string.Empty,
                     DonGia = Convert.ToDecimal(row["DonGia"])
                 });
             }
@@ -163,7 +163,7 @@ namespace Cinema_Management_App.Repositories
         }
         public async Task<IEnumerable<GheDTO>> GetAllGheDTOByRoomIdAsync(string maPhong)
         {
-            string query = @"SELECT g.MaGhe, g.MaSoGhe, lg.TenLoaiGhe AS LoaiGhe, lg.DonGia 
+            string query = @"SELECT g.MaGhe, g.MaSoGhe, lg.MaLoaiGhe, lg.TenLoaiGhe AS TenLoaiGhe, lg.DonGia 
                      FROM GHE g 
                      JOIN LOAIGHE lg ON g.MaLoaiGhe = lg.MaLoaiGhe 
                      WHERE g.MaPhong = @maPhong;";
@@ -182,33 +182,14 @@ namespace Cinema_Management_App.Repositories
                 {
                     MaGhe = row["MaGhe"].ToString() ?? string.Empty,
                     MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
-                    LoaiGhe = row["LoaiGhe"].ToString() ?? string.Empty,
+                    MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty,
+                    TenLoaiGhe = row["TenLoaiGhe"].ToString() ?? string.Empty,
                     DonGia = Convert.ToDecimal(row["DonGia"])
                 });
             }
 
             return danhSachGhe;
         }
-        public async Task<Ghe?> GetByRoomIdAsync(string maPhong)
-        {
-            string query = "SELECT * FROM QuanLyRapPhim.GHE WHERE MaPhong = @mp";
-            DbParameter[] parameters = new DbParameter[]
-            {
-                new MySqlParameter("@mp", maPhong)
-            };
-
-            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
-
-            if (dt.Rows.Count == 0) return null;
-
-            var row = dt.Rows[0];
-            return new Ghe
-            {
-                MaGhe = row["MaGhe"].ToString() ?? string.Empty,
-                MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
-                MaPhong = row["MaPhong"]?.ToString() ?? string.Empty,
-                MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty
-            };
-        }
+       
     }
 }
