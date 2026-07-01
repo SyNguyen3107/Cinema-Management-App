@@ -190,6 +190,32 @@ namespace Cinema_Management_App.Repositories
 
             return danhSachGhe;
         }
-       
+        public async Task<IEnumerable<Ghe>> GetAllGheByRoomIdAsync(string maPhong)
+        {
+            string query = @"SELECT g.MaGhe, g.MaSoGhe, g.MaLoaiGhe, g.MaPhong
+                     FROM GHE g 
+                     WHERE g.MaPhong = @maPhong;";
+
+            DbParameter[] parameters = new DbParameter[]
+            {
+                new MySqlParameter("@maPhong", maPhong)
+            };
+
+            var dt = await _dbService.ExecuteQueryAsync(query, parameters);
+            var danhSachGhe = new List<Ghe>();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                danhSachGhe.Add(new Ghe
+                {
+                    MaGhe = row["MaGhe"].ToString() ?? string.Empty,
+                    MaSoGhe = row["MaSoGhe"].ToString() ?? string.Empty,
+                    MaLoaiGhe = row["MaLoaiGhe"].ToString() ?? string.Empty,
+                    MaPhong = row["MaPhong"].ToString() ?? string.Empty
+                });
+            }
+
+            return danhSachGhe;
+        }
     }
 }

@@ -194,7 +194,7 @@
                         <DataGridTemplateColumn Header="Tỷ lệ lấp đầy ghế" Width="1.5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding TyLeDongGopDoanhThu, StringFormat=\{0:P2\}}" FontSize="15" Foreground="#606266" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding TyLeLapDayGhe, StringFormat=\{0:P2\}}" FontSize="15" Foreground="#606266" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

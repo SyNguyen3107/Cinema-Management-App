@@ -22,7 +22,7 @@ namespace Cinema_Management_App.Interfaces
 
         Task<bool> UpdateAsync(PhongChieu phong);
 
-        Task<bool> UpdateWithChairListAsync(PhongChieu phong, IEnumerable<GheDTO> dsGhe);
+        Task<bool> UpdateWithChairListAsync(PhongChieu phong, IEnumerable<Ghe> dsGhe);
 
         Task<bool> DeleteAsync(string maPhong);
 
