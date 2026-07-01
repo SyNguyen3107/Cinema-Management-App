@@ -142,7 +142,7 @@
             </Grid>
 
             <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSachGhe}" AutoGenerateColumns="False" CanUserAddRows="False" 
-                      Margin="10,0,10,10" Background="White" BorderBrush="#DCDFE6" GridLinesVisibility="Horizontal" RowHeight="45">
+                      Margin="10,0,10,10" Background="White" BorderBrush="#DCDFE6" GridLinesVisibility="Horizontal" RowHeight="50">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="MÃ SỐ GHẾ" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
