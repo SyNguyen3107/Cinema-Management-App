@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Cinema_Management_App.Views"
         mc:Ignorable="d"
         Title="Tra Cứu Phòng Chiếu" Height="650" Width="1200"
@@ -188,8 +189,34 @@
                 <Button x:Name="ButtonTraCuu" Content="Tra cứu phòng chiếu" Style="{StaticResource RoundedButtonStyle}" Height="35" Width="180" FontSize="16" Margin="0,0,10,0" Command="{Binding TraCuuPhongChieuCommand}"/>
                 <Button x:Name="ButtonThoat" Content="Thoát" Style="{StaticResource RoundedButtonStyle}" Background="#FFFF9393" Height="35" Width="95" FontSize="16" Margin="0,0,0,0" Command="{Binding ThoatCommand}"/>
             </StackPanel>
-            <DataGrid Grid.Row="4" Margin="10,0,10,10" ItemsSource="{Binding DanhSachPhongChieuHopLe}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
-                      Background="White" BorderBrush="#DCDFE6" BorderThickness="1" GridLinesVisibility="Horizontal" RowHeight="45">
+            <DataGrid Grid.Row="4" Margin="10,0,10,10" 
+          ItemsSource="{Binding DanhSachPhongChieuHopLe}" 
+          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
+          Background="White" BorderBrush="#DCDFE6" BorderThickness="1" 
+          GridLinesVisibility="Horizontal" RowHeight="45">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+
+                        <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" />
+
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu>
+
+                                    <MenuItem Header="Chỉnh sửa"
+                                  Command="{Binding PlacementTarget.Tag.ChinhSuaCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding}">
+                                        <MenuItem.Icon>
+                                            <materialDesign:PackIcon Kind="Pencil"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.RowStyle>
+
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="Background" Value="#F5F7FA"/>
@@ -216,7 +243,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding TenPhong, UpdateSourceTrigger=PropertyChanged}" Margin="5" Height="35" FontSize="14" 
-                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding TenPhong}" HorizontalAlignment="Center"/>
+                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding MaPhong}" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

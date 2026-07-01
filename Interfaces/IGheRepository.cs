@@ -19,8 +19,6 @@ namespace Cinema_Management_App.Interfaces
         Task<bool> ExistsAsync(string maGhe);
 
         Task<Ghe?> GetByIdAsync(string maGhe);
-        
-        Task<Ghe?> GetByRoomIdAsync(string maPhong);
 
         Task<string> GenerateMaGhe();
 

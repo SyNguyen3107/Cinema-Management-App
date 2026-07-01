@@ -10,5 +10,7 @@ namespace Cinema_Management_App.Interfaces
         Task<IEnumerable<LoaiGhe>> GetAllLoaiGheByMaLoaiPhongAsync(string maLoaiPhong);
 
         Task<LoaiGhe?> GetByIdAsync(string maLoaiGhe);
+
+        Task<bool> KiemTraVaThemQuyDinhLoaiGheAsync(string maLoaiPhong, IEnumerable<string> danhSachMaLoaiGhe);
     }
 }

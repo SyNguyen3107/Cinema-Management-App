@@ -189,7 +189,7 @@
 
                     <StackPanel Grid.Column="0">
                         <Label Content="Ngày bán" FontSize="15" FontWeight="SemiBold" Foreground="#606266" Margin="0,0,0,5"/>
-                        <DatePicker SelectedDate="{Binding NgayBan, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="False"/>
+                        <DatePicker SelectedDate="{Binding NgayBan, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="True"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2">

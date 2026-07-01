@@ -22,5 +22,7 @@ namespace Cinema_Management_App.Interfaces
         Task<Ve?> GetByIdAsync(string maVe);
 
         Task<IEnumerable<string>> GetDanhSachGheDaBanAsync(string maSuatChieu);
+
+        Task <decimal> GetTotalSellingbyDayAsync(DateTime date);
     }
 }

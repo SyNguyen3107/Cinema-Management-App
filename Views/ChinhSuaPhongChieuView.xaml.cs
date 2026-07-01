@@ -16,15 +16,15 @@ using System.Windows.Shapes;
 namespace Cinema_Management_App.Views
 {
     /// <summary>
-    /// Interaction logic for BanVeView.xaml
+    /// Interaction logic for ChinhSuaPhongChieuView.xaml
     /// </summary>
-    public partial class BanVeView : Window
+    public partial class ChinhSuaPhongChieuView : Window
     {
-        public BanVeView()
+        public ChinhSuaPhongChieuView()
         {
             InitializeComponent();
-            DataContext = App.Current.Services.GetService<Viewmodels.BanVeViewmodel>();
-            if (DataContext is Viewmodels.BanVeViewmodel vm)
+            DataContext = App.Current.Services.GetService<Viewmodels.ChinhSuaPhongChieuViewmodel>();
+            if (DataContext is Viewmodels.ChinhSuaPhongChieuViewmodel vm)
             {
                 vm.RequestClose += result =>
                 {

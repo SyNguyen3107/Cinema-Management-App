@@ -9,7 +9,6 @@ namespace Cinema_Management_App.Interfaces
     {
         Task<IEnumerable<LoaiPhong>> GetAllLoaiPhongAsync();
         Task<LoaiPhong?> GetByIdAsync(string maLoaiPhong);
-
         Task<IEnumerable<BaoCaoDoanhThuLoaiPhongLoaiGheDTO>> GetRevenueReportByRoomTypeAndSeatTypeAsync(int month, int year);
     }
 }

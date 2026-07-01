@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Cinema_Management_App.Services;
 
 namespace Cinema_Management_App.Viewmodels
 {
@@ -41,8 +42,11 @@ namespace Cinema_Management_App.Viewmodels
         private readonly IGheRepository _gheRepo;
         private readonly IThamSoRepository _thamSoRepo;
         private readonly IDialogService _dialogService;
+        private readonly IWindowService _windowService;
 
-        public Action? RequestClose;
+        public Action<bool?>? RequestClose;
+
+        private bool daBanVeThanhCong = false;
 
         [ObservableProperty] private ObservableCollection<SuatChieu> _danhSachSuatChieu = new();
         [ObservableProperty] private ObservableCollection<GheDTO> _danhSachGheTrong = new();
@@ -69,7 +73,8 @@ namespace Cinema_Management_App.Viewmodels
             IPhongChieuRepository phongChieuRepo,
             IGheRepository gheRepo,
             IThamSoRepository thamSoRepo,
-            IDialogService dialogService)
+            IDialogService dialogService,
+            IWindowService windowService)
         {
             _veRepo = veRepo;
             _suatChieuRepo = suatChieuRepo;
@@ -78,8 +83,10 @@ namespace Cinema_Management_App.Viewmodels
             _gheRepo = gheRepo;
             _thamSoRepo = thamSoRepo;
             _dialogService = dialogService;
+            _windowService = windowService;
 
             _ = LoadAsync();
+            
         }
 
         private async Task LoadAsync()
@@ -223,6 +230,7 @@ namespace Cinema_Management_App.Viewmodels
 
                 if (success)
                 {
+                    daBanVeThanhCong = true;
                     _dialogService.ShowMessage("Bán vé thành công!", "Thành công");
                     await ResetFormAsync(); // Reset after successful sale
                 }
@@ -281,7 +289,7 @@ namespace Cinema_Management_App.Viewmodels
                 // Calculate absolute start time
                 DateTime thoiDiemBatDau = SuatChieuDuocChon.NgayChieu.Date + SuatChieuDuocChon.GioBatDau;
 
-                if (DateTime.Now >= thoiDiemBatDau)
+                if (_ngayBan >= thoiDiemBatDau)
                 {
                     _dialogService.ShowError("Suất chiếu này đã bắt đầu chiếu. Không thể bán vé!", "Từ chối bán vé");
                     return false;
@@ -302,13 +310,15 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void TraCuuPhongChieu()
         {
-            _dialogService.ShowMessage("Chức năng tra cứu phòng chiếu đang được phát triển.", "Thông tin");
+            bool? result =
+                _windowService
+                .ShowDialog<TraCuuPhongChieuViewmodel>();
         }
 
         [RelayCommand]
         private void Thoat()
         {
-            RequestClose?.Invoke();
+            RequestClose?.Invoke(daBanVeThanhCong);
         }
     }
 }

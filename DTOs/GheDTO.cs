@@ -4,7 +4,8 @@
     {
         public string MaGhe { get; set; } = string.Empty;
         public string MaSoGhe { get; set; } = string.Empty;
-        public string LoaiGhe { get; set; } = string.Empty;
+        public string MaLoaiGhe { get; set; } = string.Empty;
+        public string TenLoaiGhe { get; set; } = string.Empty;
         public decimal DonGia { get; set; } 
     }
 }

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Cinema_Management_App.Extensions;
+using Cinema_Management_App.Interfaces;
+using Cinema_Management_App.Models;
+using Cinema_Management_App.Services;
+using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using Cinema_Management_App.Models;
-using Cinema_Management_App.Services;
-using Cinema_Management_App.Interfaces;
 
 namespace Cinema_Management_App.Repositories
 {
@@ -85,6 +86,38 @@ namespace Cinema_Management_App.Repositories
                 TenLoaiGhe = row["TenLoaiGhe"].ToString() ?? string.Empty,
                 DonGia= Convert.ToDecimal(row["DonGian"])
             };
+        }
+
+        public async Task<bool> KiemTraVaThemQuyDinhLoaiGheAsync(string maLoaiPhong, IEnumerable<string> danhSachMaLoaiGhe)
+        {
+            if (danhSachMaLoaiGhe == null || !danhSachMaLoaiGhe.Any()) return true;
+
+            var maLoaiGheDistinct = danhSachMaLoaiGhe.Distinct().ToList();
+
+            string query = @"
+        INSERT IGNORE INTO QuanLyRapPhim.QUYDINH_LOAIGHE (MaLoaiPhong, MaLoaiGhe) 
+        VALUES (@mlp, @mlg);";
+
+            using (var conn = _dbService.CreateConnection())
+            {
+                await conn.OpenAsync();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = query;
+
+                    cmd.AddParameterWithValue("@mlp", maLoaiPhong);
+                    var paramMlg = cmd.CreateParameter();
+                    paramMlg.ParameterName = "@mlg";
+                    cmd.Parameters.Add(paramMlg);
+
+                    foreach (var maLoaiGhe in maLoaiGheDistinct)
+                    {
+                        paramMlg.Value = maLoaiGhe;
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            return true;
         }
     }
 }

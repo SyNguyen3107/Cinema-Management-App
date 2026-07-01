@@ -17,8 +17,9 @@ namespace Cinema_Management_App.Viewmodels
         private readonly ITheLoaiRepository _theLoaiRepository;
         private readonly IDialogService _dialogService;
 
-        // An event the View can subscribe to in order to close itself
-        public Action? RequestClose;
+        public Action<bool?>? RequestClose;
+
+        private bool daTiepNhanPhim = false;
 
         [ObservableProperty] private string _maPhim = string.Empty;
         [ObservableProperty] private string _tenPhim = string.Empty;
@@ -88,7 +89,7 @@ namespace Cinema_Management_App.Viewmodels
             try
             {
                 bool success = await _phimRepository.AddPhimAsync(phimMoi);
-
+                daTiepNhanPhim = success;
                 if (success)
                 {
                     _dialogService.ShowMessage($"Thêm phim '{TenPhim}' thành công!", "Thành công");
@@ -143,7 +144,7 @@ namespace Cinema_Management_App.Viewmodels
         private void Thoat()
         {
             // Trigger the action so the View knows it should close
-            RequestClose?.Invoke();
+            RequestClose?.Invoke(daTiepNhanPhim);
         }
 
         // Validate all user inputs before saving

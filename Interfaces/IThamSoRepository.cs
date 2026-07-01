@@ -10,5 +10,8 @@ namespace Cinema_Management_App.Interfaces
     {
         Task<bool> LayThamSoDungSaiAsync(string maThamSo);
         Task<double> LayThamSoGiaTriAsync(string maThamSo);
+
+        Task<bool> CapNhatThamSoDungSaiAsync(string maThamSo, bool giaTri);
+        Task<bool> CapNhatThamSoGiaTriAsync(string maThamSo, double giaTri);
     }
 }

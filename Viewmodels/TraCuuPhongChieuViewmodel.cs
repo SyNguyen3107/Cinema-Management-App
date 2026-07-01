@@ -1,15 +1,15 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Cinema_Management_App.DTOs;
+using Cinema_Management_App.Extensions;
+using Cinema_Management_App.Interfaces;
+using Cinema_Management_App.Models;
+using Cinema_Management_App.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
-
-using Cinema_Management_App.Models;
-using Cinema_Management_App.Interfaces;
-using Cinema_Management_App.Extensions;
-using Cinema_Management_App.DTOs;
 
 namespace Cinema_Management_App.Viewmodels
 {
@@ -19,6 +19,7 @@ namespace Cinema_Management_App.Viewmodels
         private readonly ILoaiPhongRepository _loaiPhongRepo;
         private readonly ITinhTrangPhongRepository _tinhTrangPhongRepo;
         private readonly IDialogService _dialogService;
+        private readonly IWindowService _windowService;
 
         [ObservableProperty]
         private ObservableCollection<LoaiPhong> _danhSachLoaiPhong = new();
@@ -54,19 +55,21 @@ namespace Cinema_Management_App.Viewmodels
         [ObservableProperty]
         private ObservableCollection<TraCuuPhongChieuDTO> _danhSachPhongChieuHopLe = new();
 
-        // An event the View can subscribe to in order to close itself
-        public Action? RequestClose;
+        public Action<bool?>? RequestClose;
+        private bool infoChanged = false;
 
         // Inject repositories and services via constructor
         public TraCuuPhongChieuViewmodel(IPhongChieuRepository phongChieuRepo,
             ILoaiPhongRepository loaiPhongRepo,
             ITinhTrangPhongRepository tinhTrangPhongRepo,
-            IDialogService dialogService)
+            IDialogService dialogService,
+            IWindowService windowService)
         {
             _phongChieuRepo = phongChieuRepo;
             _loaiPhongRepo = loaiPhongRepo;
             _tinhTrangPhongRepo = tinhTrangPhongRepo;
             _dialogService = dialogService;
+            _windowService = windowService;
 
             _ = LoadAsync();
         }
@@ -128,12 +131,25 @@ namespace Cinema_Management_App.Viewmodels
                 _dialogService.ShowError($"Đã xảy ra lỗi trong quá trình tra cứu:\n{ex.ToString()}", "Lỗi hệ thống");
             }
         }
+        [RelayCommand]
+        private async Task ChinhSua(TraCuuPhongChieuDTO phongDuocChon)
+        {
+            if (phongDuocChon == null) return;
 
-        // Close the current window
+            bool? ketQuaLuu = _windowService.ShowDialog<ChinhSuaPhongChieuViewmodel>(vm =>
+            {
+                vm.RecieveRoomId(phongDuocChon.MaPhong);
+            });
+            if (ketQuaLuu == true)
+            {
+                infoChanged = true;
+                await TraCuuPhongChieuAsync();
+            }
+        }
         [RelayCommand]
         private void Thoat()
         {
-            RequestClose?.Invoke();
+            RequestClose?.Invoke(infoChanged);
         }
     }
 }
