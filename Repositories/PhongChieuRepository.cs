@@ -350,8 +350,12 @@ namespace Cinema_Management_App.Repositories
             return result > 0;
         }
 
-        public async Task<bool> UpdateWithChairListAsync(PhongChieu phong, IEnumerable<GheDTO> dsGhe)
+        public async Task<bool> UpdateWithChairListAsync(PhongChieu phong, IEnumerable<Ghe> dsGhe)
         {
+            if (phong == null)
+                throw new ArgumentNullException(nameof(phong));
+
+            dsGhe ??= Enumerable.Empty<Ghe>();
             using (var conn = _dbService.CreateConnection())
             {
                 await conn.OpenAsync();

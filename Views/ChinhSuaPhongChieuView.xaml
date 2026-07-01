@@ -190,13 +190,14 @@
                               SelectedValuePath="MaLoaiGhe"
                               SelectedValue="{Binding MaLoaiGhe, UpdateSourceTrigger=PropertyChanged}"
                               Margin="5" Height="35" FontSize="14"
+                                          SelectedItem="{Binding LoaiGheDuocChon, UpdateSourceTrigger=PropertyChanged}" 
                               HorizontalContentAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
                     <DataGridTextColumn Header="ĐƠN GIÁ" 
-                            Binding="{Binding DonGia, StringFormat={}{0:N0} VNĐ, UpdateSourceTrigger=PropertyChanged}" 
+                            Binding="{Binding LoaiGheDuocChon.DonGia, StringFormat={}{0:N0} VNĐ, UpdateSourceTrigger=PropertyChanged}" 
                             Width="0.5*" 
                             IsReadOnly="True">
                         <DataGridTextColumn.ElementStyle>

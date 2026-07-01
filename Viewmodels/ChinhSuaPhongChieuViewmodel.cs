@@ -46,7 +46,7 @@ namespace Cinema_Management_App.Viewmodels
         private ObservableCollection<LoaiGhe> _listLoaiGhe = new();
 
         [ObservableProperty]
-        private ObservableCollection<GheDTO> _DanhSachGheBanDau = new();
+        private ObservableCollection<Ghe> _DanhSachGheBanDau = new();
 
         private PhongChieu _phongChieuHienTai;
 
@@ -100,8 +100,8 @@ namespace Cinema_Management_App.Viewmodels
                     LoaiPhongDuocChon = DanhSachLoaiPhong.FirstOrDefault(x => x.MaLoaiPhong == _phongChieuHienTai.MaLoaiPhong);
                     ChonTinhTrang = DanhSachTinhTrangPhong.FirstOrDefault(x => x.MaTinhTrangPhong == _phongChieuHienTai.MaTinhTrang);
 
-                    var dsGheBanDau = await _gheRepo.GetAllGheDTOByRoomIdAsync(MaPhong);
-                    DanhSachGheBanDau = new ObservableCollection<GheDTO>(dsGheBanDau);
+                    var dsGheBanDau = await _gheRepo.GetAllGheByRoomIdAsync(MaPhong);
+                    DanhSachGheBanDau = new ObservableCollection<Ghe>(dsGheBanDau);
                 }
             }
             catch (Exception ex)
@@ -158,7 +158,7 @@ namespace Cinema_Management_App.Viewmodels
         }
 
         [RelayCommand]
-        private async Task XoaGhe(GheDTO gheCanXoa)
+        private async Task XoaGhe(Ghe gheCanXoa)
         {
             if (gheCanXoa == null) return;
 
@@ -171,7 +171,7 @@ namespace Cinema_Management_App.Viewmodels
         [RelayCommand]
         private void ThemGhe()
         {
-            var gheMoi = new GheDTO
+            var gheMoi = new Ghe
             {         
                 MaGhe = string.Empty,
 

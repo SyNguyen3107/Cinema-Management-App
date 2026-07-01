@@ -6,16 +6,30 @@
              xmlns:local="clr-namespace:Cinema_Management_App.Views"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
+    <UserControl.Resources>
+        <Style x:Key="DashboardCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Width" Value="260"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.15" Direction="270" Color="Gray"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Border HorizontalAlignment="Center">
         <WrapPanel Orientation="Horizontal" Background="Transparent">
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
                     <Image Source="/Resources/icon/money.png" Width="40" HorizontalAlignment="Left"/>
                     <TextBlock Margin="0, 2, 0, 0" Text ="Doanh thu hôm nay"/>
                     <TextBlock Text="{Binding TodayRevenue, StringFormat={}{0:N0} VNĐ}" Margin="0, 2, 0, 0" FontSize="16" FontWeight="Bold"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
                     <Image Source="/Resources/icon/ticket.png" Width="40" HorizontalAlignment="Left"/>
                     <Button Content="Bán vé" Background="Transparent" Foreground="Black" 
@@ -23,7 +37,7 @@
                             BorderThickness="0" Padding="0" FontSize="18" Command="{Binding OpenBanVeCommand}" />
                 </StackPanel>
             </Border>
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
                     <Image Source="/Resources/icon/cinema.png" Width="40" HorizontalAlignment="Left"/>
                     <Button Content="Suất chiếu mới" Background="Transparent" Foreground="Black" 
@@ -31,7 +45,7 @@
                 BorderThickness="0" Padding="0" FontSize="18" Command="{Binding OpenLapSuatChieuCommand}" />
                 </StackPanel>
             </Border>
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
                     <Image Source="/Resources/icon/movie-reel.png" Width="40" HorizontalAlignment="Left"/>
                     <Button Content="Thêm phim" Background="Transparent" Foreground="Black" 
@@ -39,7 +53,7 @@
     BorderThickness="0" Padding="0" FontSize="18"  Command="{Binding OpenTiepNhanPhimCommand}" />
                 </StackPanel>
             </Border>
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
                     <Image Source="/Resources/icon/more.png" Width="40" HorizontalAlignment="Left"/>
                     <Button Content="Thêm phòng chiếu" Background="Transparent" Foreground="Black" 
@@ -47,7 +61,7 @@ HorizontalAlignment="Left" HorizontalContentAlignment="Left"
 BorderThickness="0" Padding="0" FontSize="18"  Command="{Binding OpenLapDanhSachPhongChieuCommand}" />
                 </StackPanel>
             </Border>
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
                     <Image Source="/Resources/icon/index.png" Width="40" HorizontalAlignment="Left"/>
                     <Button Content="Tra cứu phòng chiếu" Background="Transparent" Foreground="Black" 
@@ -55,7 +69,7 @@ HorizontalAlignment="Left" HorizontalContentAlignment="Left"
 BorderThickness="0" Padding="0" FontSize="18"  Command="{Binding OpenTraCuuPhongChieuCommand}" />
                 </StackPanel>
             </Border>
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <Button Background="Transparent" Foreground="Black" 
                         BorderThickness="0" Padding="0" Command="{Binding OpenBaoCaoDoanhThuPhimTheoThangCommand}" Height="120"
                         HorizontalContentAlignment="Left" VerticalContentAlignment="Top">
@@ -65,7 +79,7 @@ BorderThickness="0" Padding="0" FontSize="18"  Command="{Binding OpenTraCuuPhong
                     </StackPanel>
                     </Button>
             </Border>
-            <Border Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
+            <Border Style="{StaticResource DashboardCardStyle}" Background="White" Width = "260" Height="120" Margin="10" CornerRadius="15">
                 <Button Background="Transparent" Foreground="Black" 
                         BorderThickness="0" Padding="0" Command="{Binding OpenBaoCaoDoanhThuTheoLoaiPhongCommand}" Height="120" 
                         HorizontalContentAlignment="Left" VerticalContentAlignment="Top">

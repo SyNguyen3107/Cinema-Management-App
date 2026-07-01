@@ -178,7 +178,7 @@ namespace Cinema_Management_App.Viewmodels
                     cuKetThuc = cuKetThuc.AddDays(1);
                 }
 
-                if (quyDinhTrungGio)
+                if (!quyDinhTrungGio)
                 {
                     if (hienTaiBatDau < cuKetThuc && cuBatDau < hienTaiKetThuc)
                     {

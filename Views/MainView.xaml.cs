@@ -30,5 +30,12 @@ namespace Cinema_Management_App.Views
                 };
             }
         }
+        private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.DragMove();
+            }
+        }
     }
 }

@@ -283,8 +283,8 @@ namespace Cinema_Management_App.Viewmodels
             }
 
             // 4. BUSINESS RULE: Do not sell tickets for screenings that have already started
-            bool khongBanVeDaChieu = await _thamSoRepo.LayThamSoDungSaiAsync("TS_VECHUABATDAU");
-            if (khongBanVeDaChieu)
+            bool duocBanVeDaChieu = await _thamSoRepo.LayThamSoDungSaiAsync("TS_VECHUABATDAU");
+            if (!duocBanVeDaChieu)
             {
                 // Calculate absolute start time
                 DateTime thoiDiemBatDau = SuatChieuDuocChon.NgayChieu.Date + SuatChieuDuocChon.GioBatDau;
